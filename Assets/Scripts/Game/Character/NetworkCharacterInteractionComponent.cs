@@ -9,23 +9,18 @@ namespace JoyWay.Game.Character
     public class NetworkCharacterInteractionComponent : NetworkBehaviour
     {
         [SerializeField] private Transform _handEndTransform;
-        
+        [SerializeField] private NetworkCharacterLookComponent _lookComponent;
+
         private InputService _inputService;
-        private NetworkCharacterLookComponent _lookComponent;
         private float _maxInteractionDistance;
-        
+
         private PickableProjectile _objectInHand;
 
         public void Setup(float maxInteractionDistance)
         {
             _maxInteractionDistance = maxInteractionDistance;
         }
-        
-        public void Initialize(NetworkCharacterLookComponent lookComponent)
-        {
-            _lookComponent = lookComponent;
-        }
-        
+
         public void Interact()
         {
             Transform cameraTransform = _lookComponent.GetCameraTransform();
@@ -46,7 +41,7 @@ namespace JoyWay.Game.Character
 
             if (hitTransform == null)
                 return;
-            
+
             if (TryPickupObject(hitTransform, out var pickableObject))
             {
                 if (pickableObject.CanPick)
@@ -67,7 +62,7 @@ namespace JoyWay.Game.Character
         private bool TryPickupObject(Transform hitTransform, out PickableProjectile pickableProjectile)
         {
             pickableProjectile = null;
-            
+
             if (hitTransform.TryGetComponent<PickableProjectile>(out pickableProjectile))
                 return true;
             else
@@ -84,7 +79,7 @@ namespace JoyWay.Game.Character
             else
                 return false;
         }
-        
+
         [Server]
         private Transform GetRaycastHitTransform(Vector3 position, Vector3 direction)
         {

@@ -20,6 +20,8 @@ namespace JoyWay.Infrastructure
         
         private LevelSpawnPoints _levelSpawnPoints;
         private CharacterFactory _characterFactory;
+        public bool IsClient { get; private set; }
+        public bool IsServer { get; private set; }
 
         [Inject]
         public void Construct(CharacterFactory characterFactory)
@@ -36,24 +38,28 @@ namespace JoyWay.Infrastructure
         public override void OnStartClient()
         {
             base.OnStartClient();
+            IsClient = true;
             Connected?.Invoke();
         }
 
         public override void OnStopClient()
         {
             base.OnStopClient();
+            IsClient = false;
             Disconnected?.Invoke();
         }
 
         public override void OnStartHost()
         {
             base.OnStartHost();
+            IsServer = true;
             Connected?.Invoke();
         }
 
         public override void OnStopHost()
         {
             base.OnStopHost();
+            IsServer = false;
             Disconnected?.Invoke();
         }
 
@@ -69,7 +75,7 @@ namespace JoyWay.Infrastructure
         {
             Transform spawnPoint = GetRandomSpawnPoint();
             var character = _characterFactory.SpawnCharacterOnServer(spawnPoint, conn);
-            var characterHealth = character.HealthComponent;
+            var characterHealth = character.NetworkHealth;
             characterHealth.Died += RespawnCharacterOnServer;
         }
 
@@ -94,6 +100,7 @@ namespace JoyWay.Infrastructure
                 throw new ArgumentException("Not supported transport");
             }
 
+            IsClient = true;
             UriBuilder builder = new UriBuilder();
             var exampleUri = transport.ServerUri();
             builder.Scheme = exampleUri.Scheme;

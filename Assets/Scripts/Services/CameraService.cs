@@ -41,11 +41,6 @@ namespace JoyWay.Services
             return _camera.transform;
         }
 
-        private void LateUpdate()
-        {
-            LookDirectionUpdated?.Invoke(GetLookDirection());
-        }
-
         public Vector3 GetLookDirection()
         {
             return _camera.transform.forward;

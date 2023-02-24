@@ -2,6 +2,7 @@
 using JoyWay.Services;
 using Mirror;
 using UnityEngine;
+using Zenject;
 
 namespace JoyWay.Game.Character
 {
@@ -16,23 +17,42 @@ namespace JoyWay.Game.Character
         
         private CameraService _cameraService;
 
-        private Vector3 _newLookDirection;
-        private Vector3 _currentLookDirection;
+        public Vector3 LookDirection { get; private set; }
+        private Vector3 _newLookDirection; // TODO: replace with _lookDirection?
         private float _interpolationTimeInterval;
         private float _timer;
+
+        [Inject]
+        public void Initialize(CameraService cameraService)
+        {
+            _cameraService = cameraService;
+        }
 
         public void Setup(float interpolationTimeInterval)
         {
             _interpolationTimeInterval = interpolationTimeInterval;
         }
 
-        public void Initialize(CameraService cameraService)
+        public void AttachCamera()
         {
-            _cameraService = cameraService;
             _cameraService.SetFollowTarget(_eyes);
         }
 
-        public void UpdateLookDirection(Vector3 direction)
+        private void Update()
+        {
+            if (isOwned)
+            {
+                LookDirection = _cameraService.GetLookDirection();
+                UpdateLookDirection(LookDirection);
+                // _lookDirection = LookDirection;
+            }
+            else
+            {
+                UpdateLookDirectionByInterpolation();
+            }
+        }
+
+        private void UpdateLookDirection(Vector3 direction)
         {
             LookDirectionChanged?.Invoke(direction);
             CmdChangeLookDirection(direction);
@@ -44,38 +64,27 @@ namespace JoyWay.Game.Character
             _lookDirection = direction;
         }
 
+        private void UpdateLookDirectionByInterpolation()
+        {
+            _timer += Time.deltaTime;
+
+            LookDirection = Vector3.Lerp(LookDirection, _newLookDirection, _timer / _interpolationTimeInterval);
+
+            if (LookDirection != _newLookDirection)
+            {
+                LookDirectionChanged?.Invoke(LookDirection);
+            }
+        }
+
         private void SetLookDirection(Vector3 oldLookDirection, Vector3 newLookDirection)
         {
             _timer = 0;
             _newLookDirection = newLookDirection;
         }
 
-        private void Update()
-        {
-            UpdateLookDirectionByInterpolation();
-        }
-
-        private void UpdateLookDirectionByInterpolation()
-        {
-            if (isOwned)
-                return;
-
-            _timer += Time.deltaTime;
-
-            _currentLookDirection =
-                Vector3.Lerp(_currentLookDirection, _newLookDirection, _timer / _interpolationTimeInterval);
-
-            LookDirectionChanged?.Invoke(_currentLookDirection);
-        }
-
         public Transform GetCameraTransform()
         {
             return _cameraService.GetCameraTransform();
-        }
-
-        public Vector3 GetLookDirection()
-        {
-            return _cameraService.GetLookDirection();
         }
     }
 }

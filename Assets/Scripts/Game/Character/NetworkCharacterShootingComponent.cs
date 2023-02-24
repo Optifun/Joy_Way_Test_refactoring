@@ -3,27 +3,27 @@ using JoyWay.Services;
 using Mirror;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 namespace JoyWay.Game.Character
 {
     public class NetworkCharacterShootingComponent : NetworkBehaviour
     {
         [SerializeField] private Transform _handEndTransform;
-        
-        private NetworkCharacterLookComponent _lookComponent;
+        [SerializeField] private NetworkCharacterLookComponent _lookComponent;
         private ProjectileFactory _projectileFactory;
 
         private Vector3 _lookDirection;
 
-        public void Initialize(NetworkCharacterLookComponent lookComponent, ProjectileFactory projectileFactory)
+        [Inject]
+        public void Initialize(ProjectileFactory projectileFactory)
         {
-            _lookComponent = lookComponent;
             _projectileFactory = projectileFactory;
         }
 
         public void Fire()
         {
-            _lookDirection = _lookComponent.GetLookDirection();
+            _lookDirection = _lookComponent.LookDirection;
             CmdFire(_handEndTransform.position, _lookDirection);
         }
 

@@ -1,9 +1,6 @@
-using System.Numerics;
 using JoyWay.Services;
 using Mirror;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -12,27 +9,23 @@ namespace JoyWay.Game.Character
     public class NetworkCharacterMovementComponent : NetworkBehaviour
     {
         [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField]
+        private NetworkCharacterLookComponent _lookComponent;
 
         private float _maxSpeed;
         private float _movementForce;
         private float _jumpForce;
         private float _groundDrag;
         private float _airDrag;
-        
-        private float _groundRaycastLength = 0.2f;
-        
-        private NetworkCharacterLookComponent _lookComponent;
+
+        private const float GroundRaycastLength = 0.2f;
 
         private Vector3 _moveDirection;
         private Transform _cameraTransform;
         private bool _isGrounded;
+        private CameraService _cameraService;
 
-        public void Setup(
-            float maxSpeed,
-            float movementForce,
-            float jumpForce,
-            float groundDrag,
-            float airDrag)
+        public void Setup(float maxSpeed, float movementForce, float jumpForce, float groundDrag, float airDrag)
         {
             _maxSpeed = maxSpeed;
             _movementForce = movementForce;
@@ -41,19 +34,19 @@ namespace JoyWay.Game.Character
             _airDrag = airDrag;
         }
 
-        public void Initialize(NetworkCharacterLookComponent lookComponent)
+        private void Initialize(CameraService cameraService)
         {
-            _lookComponent = lookComponent;
-            _cameraTransform = _lookComponent.GetCameraTransform();
+            _cameraService = cameraService;
+            _cameraTransform = cameraService.GetCameraTransform();
         }
-        
+
         [Client]
         public void Move(Vector2 moveDirection)
         {
             _moveDirection = InputDirectionToCameraLookDirection(moveDirection);
             CmdPerformMove(_moveDirection);
         }
-        
+
         public void Jump()
         {
             CmdPerformJump();
@@ -95,7 +88,7 @@ namespace JoyWay.Game.Character
         private Vector3 InputDirectionToCameraLookDirection(Vector2 inputDirection)
         {
             Vector3 calibrationVector =
-                _cameraTransform.right * inputDirection.x + 
+                _cameraTransform.right * inputDirection.x +
                 _cameraTransform.forward * inputDirection.y;
             calibrationVector.y = 0;
             return calibrationVector.normalized;
@@ -103,8 +96,8 @@ namespace JoyWay.Game.Character
 
         private bool CheckGrounded()
         {
-            Ray rayToGround = new Ray(transform.position + Vector3.up * _groundRaycastLength / 2, -transform.up);
-            bool isGrounded = Physics.Raycast(rayToGround, _groundRaycastLength);
+            Ray rayToGround = new Ray(transform.position + Vector3.up * GroundRaycastLength / 2, -transform.up);
+            bool isGrounded = Physics.Raycast(rayToGround, GroundRaycastLength);
             return isGrounded;
         }
     }

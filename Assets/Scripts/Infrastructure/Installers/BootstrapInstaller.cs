@@ -1,4 +1,3 @@
-using JoyWay.Infrastructure.Factories;
 using JoyWay.Services;
 using UnityEngine;
 using Zenject;
@@ -13,7 +12,6 @@ namespace JoyWay.Infrastructure.Installers
         public override void InstallBindings()
         {
             InstallServices();
-            InstallFactories();
 
             Container.Bind<AdvancedNetworkManager>()
                 .FromComponentInNewPrefab(_networkManagerPrefab)
@@ -50,24 +48,6 @@ namespace JoyWay.Infrastructure.Installers
 
             Container.Bind<CameraService>()
                 .FromComponentInNewPrefab(_cameraService)
-                .AsSingle()
-                .NonLazy();
-        }
-
-        private void InstallFactories()
-        {
-            Container.Bind<UIFactory>()
-                .FromNew()
-                .AsSingle()
-                .NonLazy();
-            
-            Container.Bind<CharacterFactory>()
-                .FromNew()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<ProjectileFactory>()
-                .FromNew()
                 .AsSingle()
                 .NonLazy();
         }
