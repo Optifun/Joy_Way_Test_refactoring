@@ -1,38 +1,52 @@
 using System;
 using System.Net;
-using JoyWay.Game;
-using JoyWay.Game.Character;
-using JoyWay.Infrastructure.Factories;
+using JoyWay.Game.Messages;
 using kcp2k;
+using MessagePipe;
 using Mirror;
-using UnityEngine;
-using UnityEngine.Events;
 using Zenject;
 
 namespace JoyWay.Infrastructure
 {
-    public class AdvancedNetworkManager : NetworkManager
+    public class AdvancedNetworkManager : NetworkManager, ILaunchContext
     {
         public new static AdvancedNetworkManager singleton { get; private set; }
-        
+
         public event Action Connected;
         public event Action Disconnected;
-        
-        private LevelSpawnPoints _levelSpawnPoints;
-        private CharacterFactory _characterFactory;
+
         public bool IsClient { get; private set; }
         public bool IsServer { get; private set; }
 
+
+        private IPublisher<SpawnCharacterServerMessage> _spawnCharacter;
+
         [Inject]
-        public void Construct(CharacterFactory characterFactory)
+        public void Construct(IPublisher<SpawnCharacterServerMessage> spawnCharacter)
         {
-            _characterFactory = characterFactory;
+            _spawnCharacter = spawnCharacter;
         }
-        
+
         public override void Awake()
         {
             base.Awake();
             singleton = this;
+        }
+
+        public void Connect(IPAddress ipAddress)
+        {
+            if (transport is KcpTransport kcpTransport == false)
+            {
+                throw new ArgumentException("Not supported transport");
+            }
+
+            IsClient = true;
+            UriBuilder builder = new UriBuilder();
+            var exampleUri = transport.ServerUri();
+            builder.Scheme = exampleUri.Scheme;
+            builder.Port = exampleUri.Port;
+            builder.Host = ipAddress.ToString();
+            StartClient(builder.Uri);
         }
 
         public override void OnStartClient()
@@ -63,50 +77,10 @@ namespace JoyWay.Infrastructure
             Disconnected?.Invoke();
         }
 
-        private void RespawnCharacterOnServer(NetworkCharacterHealthComponent networkCharacterHealthComponent)
-        {
-            networkCharacterHealthComponent.Died -= RespawnCharacterOnServer;
-            var conn = networkCharacterHealthComponent.netIdentity.connectionToClient;
-            NetworkServer.Destroy(networkCharacterHealthComponent.gameObject);
-            SpawnCharacterOnServer(conn);
-        }
-
-        private void SpawnCharacterOnServer(NetworkConnectionToClient conn)
-        {
-            Transform spawnPoint = GetRandomSpawnPoint();
-            var character = _characterFactory.SpawnCharacterOnServer(spawnPoint, conn);
-            var characterHealth = character.NetworkHealth;
-            characterHealth.Died += RespawnCharacterOnServer;
-        }
-
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
             base.OnServerAddPlayer(conn);
-            SpawnCharacterOnServer(conn);
-        }
-
-        private Transform GetRandomSpawnPoint()
-        {
-            if (_levelSpawnPoints == null)
-                _levelSpawnPoints = FindObjectOfType<LevelSpawnPoints>();
-
-            return _levelSpawnPoints.GetRandomSpawnPoint();
-        }
-
-        public void Connect(IPAddress ipAddress)
-        {
-            if (transport is KcpTransport kcpTransport == false)
-            {
-                throw new ArgumentException("Not supported transport");
-            }
-
-            IsClient = true;
-            UriBuilder builder = new UriBuilder();
-            var exampleUri = transport.ServerUri();
-            builder.Scheme = exampleUri.Scheme;
-            builder.Port = exampleUri.Port;
-            builder.Host = ipAddress.ToString();
-            StartClient(builder.Uri);
+            _spawnCharacter.Publish(new SpawnCharacterServerMessage() { Connection = conn });
         }
     }
 }

@@ -1,16 +1,14 @@
-﻿using JoyWay.Infrastructure.Factories;
-using JoyWay.Resources;
+﻿using JoyWay.Resources;
 using JoyWay.Services;
-using MessagePipe;
-using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace JoyWay.Infrastructure
 {
     public class GameStartup : IInitializable
     {
-        private SceneLoader _sceneLoader;
-        private GameFlow _gameFlow;
+        private readonly SceneLoader _sceneLoader;
+        private readonly GameFlow _gameFlow;
 
         public GameStartup(
             SceneLoader sceneLoader,
@@ -22,10 +20,17 @@ namespace JoyWay.Infrastructure
 
         public void Initialize()
         {
-            _sceneLoader.Load(Constants.GameScene, SceneLoaded);
+            if (SceneManager.GetActiveScene().name != Constants.GameScene)
+            {
+                _sceneLoader.Load(Constants.GameScene, StartGame);
+            }
+            else
+            {
+                StartGame();
+            }
         }
 
-        private void SceneLoaded()
+        private void StartGame()
         {
             _gameFlow.StartGame();
         }

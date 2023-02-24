@@ -1,4 +1,6 @@
+using JoyWay.Game.Messages;
 using JoyWay.Services;
+using MessagePipe;
 using UnityEngine;
 using Zenject;
 
@@ -13,7 +15,7 @@ namespace JoyWay.Infrastructure.Installers
         {
             InstallServices();
 
-            Container.Bind<AdvancedNetworkManager>()
+            Container.Bind(typeof(AdvancedNetworkManager), typeof(ILaunchContext))
                 .FromComponentInNewPrefab(_networkManagerPrefab)
                 .AsSingle()
                 .NonLazy();
@@ -27,6 +29,10 @@ namespace JoyWay.Infrastructure.Installers
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
+
+            Container.Bind<UIFactory>().FromNew().AsSingle().NonLazy();
+            var options = Container.BindMessagePipe();
+            Container.BindMessageBroker<SpawnCharacterServerMessage>(options);
         }
 
         private void InstallServices()
@@ -35,6 +41,10 @@ namespace JoyWay.Infrastructure.Installers
                 .FromNew()
                 .AsSingle()
                 .NonLazy();
+
+            Container.Bind<PlayerInputs>()
+                .FromNew()
+                .AsSingle();
             
             Container.Bind<InputService>()
                 .FromNewComponentOnNewGameObject()

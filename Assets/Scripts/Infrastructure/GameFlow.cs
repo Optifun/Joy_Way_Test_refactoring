@@ -1,4 +1,5 @@
-﻿using JoyWay.UI;
+﻿using JoyWay.Services;
+using JoyWay.UI;
 using UnityEngine;
 using Zenject;
 
@@ -12,10 +13,12 @@ namespace JoyWay.Infrastructure
         private MainMenuController _mainMenu;
 
         private HideableUI _crosshairUI;
+        private InputService _inputService;
 
         [Inject]
-        public void Construct(AdvancedNetworkManager networkManager, UIFactory uiFactory)
+        public void Construct(AdvancedNetworkManager networkManager, UIFactory uiFactory, InputService inputService)
         {
+            _inputService = inputService;
             _networkManager = networkManager;
             _uiFactory = uiFactory;
         }
@@ -32,12 +35,14 @@ namespace JoyWay.Infrastructure
         {
             _mainMenu.Show();
             _crosshairUI.Hide();
+            _inputService.Disable();
         }
 
         private void GoToGame()
         {
             _mainMenu.Hide();
             _crosshairUI.Show();
+            _inputService.Enable();
         }
 
         private void OnDestroy()

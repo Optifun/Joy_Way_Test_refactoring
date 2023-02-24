@@ -9,41 +9,20 @@ namespace JoyWay.Infrastructure.Factories
     public class CharacterFactory
     {
         private readonly AssetContainer _assetContainer;
-        private LaunchParameters _launchParameters;
+        private ILaunchContext _launchContext;
         private DiContainer _diContainer;
 
-        public CharacterFactory(DiContainer diContainer,LaunchParameters launchParameters, AssetContainer assetContainer)
+        public CharacterFactory(DiContainer diContainer,ILaunchContext launchContext, AssetContainer assetContainer)
         {
             _diContainer = diContainer;
-            _launchParameters = launchParameters;
+            _launchContext = launchContext;
             _assetContainer = assetContainer;
-            NetworkClient.RegisterPrefab(_assetContainer.Character.Value.gameObject, SpawnCharacterOnClient, UnspawnCharacterOnClient);
         }
 
-        public CharacterContainer SpawnCharacterOnServer(Transform at, NetworkConnectionToClient conn)
+        public CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, bool isOwner)
         {
-            bool isOwner = conn.identity.isOwned;
-            var characterContainer = CreateCharacter(at.position, at.rotation, isOwner);
-            NetworkServer.Spawn(characterContainer.gameObject, conn);
-            return characterContainer;
-        }
-
-        private GameObject SpawnCharacterOnClient(SpawnMessage msg)
-        {
-            var characterContainer = CreateCharacter(msg.position, msg.rotation, msg.isOwner);
-            return characterContainer.gameObject;
-        }
-
-
-        private void UnspawnCharacterOnClient(GameObject spawned)
-        {
-            Object.Destroy(spawned);
-        }
-
-        private CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, bool isOwner)
-        {
-            var isHost = _launchParameters.IsHost;
-            var isClient = _launchParameters.IsClient;
+            var isHost = _launchContext.IsHost;
+            var isClient = _launchContext.IsClient;
 
             CharacterContainer container = Object.Instantiate(_assetContainer.Character.Value, position, rotation);
             _diContainer.InjectGameObject(container.gameObject);

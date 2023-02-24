@@ -6,18 +6,13 @@ namespace JoyWay.Game.Character
     {
         [SerializeField] private Transform _shouldersHeightTransform;
 
+        [SerializeField]
         private NetworkCharacterLookComponent _lookComponent;
         private Vector3 _cachedDirection;
 
-        [Inject]
-        private void Initialize(NetworkCharacterLookComponent lookComponent)
-        {
-            _lookComponent = lookComponent;
-        }
-
         private void Update()
         {
-            if (_cachedDirection == _lookComponent.LookDirection)
+            if (_lookComponent == null || _cachedDirection == _lookComponent.LookDirection)
                 return;
 
             _cachedDirection = _lookComponent.LookDirection;

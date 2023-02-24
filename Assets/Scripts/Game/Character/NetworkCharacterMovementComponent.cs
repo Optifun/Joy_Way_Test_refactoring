@@ -1,6 +1,7 @@
 using JoyWay.Services;
 using Mirror;
 using UnityEngine;
+using Zenject;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -34,6 +35,7 @@ namespace JoyWay.Game.Character
             _airDrag = airDrag;
         }
 
+        [Inject]
         private void Initialize(CameraService cameraService)
         {
             _cameraService = cameraService;
