@@ -1,14 +1,19 @@
 using System;
+using System.Collections;
 using System.Net;
 using JoyWay.Game.Messages;
+using JoyWay.Resources;
+using JoyWay.Services;
+using JoyWay.UI;
 using kcp2k;
 using MessagePipe;
 using Mirror;
+using UnityEngine;
 using Zenject;
 
 namespace JoyWay.Infrastructure
 {
-    public class AdvancedNetworkManager : NetworkManager, ILaunchContext
+    public class AdvancedNetworkManager : NetworkManager, ICoroutineRunner
     {
         public new static AdvancedNetworkManager singleton { get; private set; }
 
@@ -79,7 +84,10 @@ namespace JoyWay.Infrastructure
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            base.OnServerAddPlayer(conn);
+            GameObject player = Instantiate(playerPrefab);
+            player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+            NetworkServer.AddPlayerForConnection(conn, player);
+
             _spawnCharacter.Publish(new SpawnCharacterServerMessage() { Connection = conn });
         }
     }

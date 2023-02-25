@@ -1,6 +1,8 @@
 using JoyWay.Game.Messages;
 using JoyWay.Game.Services;
 using JoyWay.Services;
+using JoyWay.UI;
+using JoyWay.Utils;
 using MessagePipe;
 using UnityEngine;
 using Zenject;
@@ -16,7 +18,7 @@ namespace JoyWay.Infrastructure.Installers
         {
             InstallServices();
 
-            Container.Bind(typeof(AdvancedNetworkManager), typeof(ILaunchContext))
+            Container.Bind<AdvancedNetworkManager, ICoroutineRunner>()
                 .FromComponentInNewPrefab(_networkManagerPrefab)
                 .AsSingle()
                 .NonLazy();
@@ -26,12 +28,14 @@ namespace JoyWay.Infrastructure.Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<GameFlow>()
+            Container.Bind<ILaunchContext, GameFlow>().To<GameFlow>()
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
 
             Container.Bind<UIFactory>().FromNew().AsSingle().NonLazy();
+            Container.Bind<MainMenuController>().FromNew().AsSingle();
+
             var options = Container.BindMessagePipe();
             Container.BindMessageBroker<SpawnCharacterServerMessage>(options);
             Container.BindMessageBroker<HealthUpdateMessage>(options);

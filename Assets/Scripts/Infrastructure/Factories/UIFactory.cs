@@ -2,23 +2,28 @@
 using JoyWay.Services;
 using JoyWay.UI;
 using UnityEngine;
+using Zenject;
 
 public class UIFactory
 {
     private readonly AssetContainer _assetContainer;
     private readonly AdvancedNetworkManager _networkManager;
+    private DiContainer _diContainer;
 
-    public UIFactory(AssetContainer assetContainer, AdvancedNetworkManager networkManager)
+    public UIFactory(DiContainer diContainer,AssetContainer assetContainer, AdvancedNetworkManager networkManager)
     {
+        _diContainer = diContainer;
         _assetContainer = assetContainer;
         _networkManager = networkManager;
     }
     
-    public MainMenuController CreateMainMenu()
+    public MainMenuController CreateMainMenu(GameFlow gameFlow)
     {
         MainMenuUI mainMenu = Object.Instantiate(_assetContainer.MainMenuUI.Value);
         Object.DontDestroyOnLoad(mainMenu);
-        return new MainMenuController(mainMenu, _networkManager);
+        var controller = _diContainer.Resolve<MainMenuController>();
+        controller.Setup(mainMenu, gameFlow);
+        return controller;
     }
 
     public HideableUI CreateCrosshairUI()

@@ -16,7 +16,6 @@ namespace JoyWay.Infrastructure.Installers
 
         public override void InstallBindings()
         {
-            var launchContext = Container.Resolve<ILaunchContext>();
             Container.Bind<LevelSpawnPoints>().FromInstance(_levelSpawnPoints).AsSingle();
             Container.Bind<CharacterFactory>().FromNew().AsSingle();
             Container.Bind<ProjectileFactory>().FromNew().AsSingle();

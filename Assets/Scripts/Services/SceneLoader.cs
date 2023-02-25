@@ -7,7 +7,7 @@ namespace JoyWay.Services
 {
     public class SceneLoader : MonoBehaviour
     {
-        public void Load(string name, Action onLoaded = null) => StartCoroutine((LoadScene(name, onLoaded)));
+        public Coroutine Load(string name, Action onLoaded = null) => StartCoroutine((LoadScene(name, onLoaded)));
 
         private IEnumerator LoadScene(string nextScene, Action onLoaded = null)
         {
