@@ -1,6 +1,7 @@
 ﻿using System;
 using JoyWay.Game.Character;
 using JoyWay.Game.Messages;
+using JoyWay.Infrastructure;
 using JoyWay.Infrastructure.Factories;
 using MessagePipe;
 using Mirror;
@@ -15,15 +16,16 @@ namespace JoyWay.Game.Services
         private readonly LevelSpawnPoints _levelSpawnPoints;
 
         private IDisposable _subscription;
-        private ISubscriber<SpawnCharacterServerMessage> _characterSpawned;
+        private IBufferedSubscriber<SpawnCharacterServerMessage> _characterSpawned;
+        private ILaunchContext _launchContext;
 
-        public ServerPlayerSpawnerSystem(ISubscriber<SpawnCharacterServerMessage> characterSpawned,
+        public ServerPlayerSpawnerSystem(ILaunchContext launchContext, IBufferedSubscriber<SpawnCharacterServerMessage> characterSpawned, 
             CharacterFactory factory, LevelSpawnPoints levelSpawnPoints)
         {
+            _launchContext = launchContext;
             _characterSpawned = characterSpawned;
             _levelSpawnPoints = levelSpawnPoints;
             _factory = factory;
-
         }
 
         public void Initialize()

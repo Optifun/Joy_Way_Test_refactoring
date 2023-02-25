@@ -41,7 +41,6 @@ namespace JoyWay.Game.Character
         private void SetHealth(int oldHealth, int newHealth)
         {
             int delta = newHealth - oldHealth;
-            if (delta == 0) return;
 
             _publisher.Publish(new HealthUpdateMessage()
             {

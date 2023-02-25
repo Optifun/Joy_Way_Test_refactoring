@@ -20,18 +20,6 @@ namespace JoyWay.Infrastructure
 
         public void Initialize()
         {
-            if (SceneManager.GetActiveScene().name != Constants.GameScene)
-            {
-                _sceneLoader.Load(Constants.GameScene, StartGame);
-            }
-            else
-            {
-                StartGame();
-            }
-        }
-
-        private void StartGame()
-        {
             _gameFlow.StartGame();
         }
     }

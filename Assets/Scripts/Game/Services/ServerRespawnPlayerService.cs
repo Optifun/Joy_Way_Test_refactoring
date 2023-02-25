@@ -1,6 +1,7 @@
 ﻿using System;
 using JoyWay.Game.Character;
 using JoyWay.Game.Messages;
+using JoyWay.Infrastructure;
 using MessagePipe;
 using Zenject;
 

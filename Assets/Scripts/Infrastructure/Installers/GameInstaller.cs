@@ -16,6 +16,7 @@ namespace JoyWay.Infrastructure.Installers
 
         public override void InstallBindings()
         {
+            var launchContext = Container.Resolve<ILaunchContext>();
             Container.Bind<LevelSpawnPoints>().FromInstance(_levelSpawnPoints).AsSingle();
             Container.Bind<CharacterFactory>().FromNew().AsSingle();
             Container.Bind<ProjectileFactory>().FromNew().AsSingle();
@@ -24,14 +25,14 @@ namespace JoyWay.Infrastructure.Installers
             Container.Bind<DamageController>().FromNew().AsTransient();
 
             Container.Bind<IInitializable, ServerPlayerSpawnerSystem>()
-                .To<ServerPlayerSpawnerSystem>().FromNew().AsSingle();
+                .To<ServerPlayerSpawnerSystem>().FromNew().AsSingle().When(IsServer);
 
             Container.Bind<IInitializable, ServerRespawnPlayerService>()
-                .To<ServerRespawnPlayerService>().FromNew().AsSingle();
+                .To<ServerRespawnPlayerService>().FromNew().AsSingle().When(IsServer);
 
             Container.Bind<GameObject>().FromMethod(context => context.Container.Resolve<AssetContainer>().Character.Value.gameObject)
                 .AsTransient().WhenInjectedInto<ClientPlayerSpawnerSystem>();
-            Container.Bind<IInitializable, ClientPlayerSpawnerSystem>().To<ClientPlayerSpawnerSystem>().FromNew().AsSingle();
+            Container.Bind<IInitializable, ClientPlayerSpawnerSystem>().To<ClientPlayerSpawnerSystem>().FromNew().AsSingle().When(IsClient);
 
         }
 

@@ -19,10 +19,10 @@ namespace JoyWay.Infrastructure
         public bool IsServer { get; private set; }
 
 
-        private IPublisher<SpawnCharacterServerMessage> _spawnCharacter;
+        private IBufferedPublisher<SpawnCharacterServerMessage> _spawnCharacter;
 
         [Inject]
-        public void Construct(IPublisher<SpawnCharacterServerMessage> spawnCharacter)
+        public void Construct(IBufferedPublisher<SpawnCharacterServerMessage> spawnCharacter)
         {
             _spawnCharacter = spawnCharacter;
         }
@@ -67,14 +67,14 @@ namespace JoyWay.Infrastructure
         {
             base.OnStartHost();
             IsServer = true;
-            Connected?.Invoke();
+            // Connected?.Invoke();
         }
 
         public override void OnStopHost()
         {
             base.OnStopHost();
             IsServer = false;
-            Disconnected?.Invoke();
+            // Disconnected?.Invoke();
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)

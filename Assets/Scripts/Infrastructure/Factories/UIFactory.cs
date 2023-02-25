@@ -17,12 +17,14 @@ public class UIFactory
     public MainMenuController CreateMainMenu()
     {
         MainMenuUI mainMenu = Object.Instantiate(_assetContainer.MainMenuUI.Value);
+        Object.DontDestroyOnLoad(mainMenu);
         return new MainMenuController(mainMenu, _networkManager);
     }
 
     public HideableUI CreateCrosshairUI()
     {
         HideableUI crosshairUI = Object.Instantiate(_assetContainer.CrosshairUI.Value);
+        Object.DontDestroyOnLoad(crosshairUI);
         return crosshairUI;
     }
 }
