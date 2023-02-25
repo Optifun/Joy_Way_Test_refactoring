@@ -3,6 +3,7 @@ using JoyWay.Game.Character;
 using JoyWay.Game.Messages;
 using JoyWay.Infrastructure;
 using MessagePipe;
+using Mirror;
 using Zenject;
 
 namespace JoyWay.Game.Services
@@ -28,6 +29,7 @@ namespace JoyWay.Game.Services
 
         private void RespawnCharacter(DeathMessage message)
         {
+            NetworkServer.Destroy(message.Target.gameObject);
             _spawnCharacter.Publish(new SpawnCharacterServerMessage()
             {
                 Connection = message.Target.connectionToClient
