@@ -1,4 +1,5 @@
 using JoyWay.Game.Messages;
+using JoyWay.Game.Services;
 using JoyWay.Services;
 using MessagePipe;
 using UnityEngine;
@@ -33,6 +34,8 @@ namespace JoyWay.Infrastructure.Installers
             Container.Bind<UIFactory>().FromNew().AsSingle().NonLazy();
             var options = Container.BindMessagePipe();
             Container.BindMessageBroker<SpawnCharacterServerMessage>(options);
+            Container.BindMessageBroker<HealthUpdateMessage>(options);
+            Container.BindMessageBroker<DeathMessage>(options);
         }
 
         private void InstallServices()

@@ -1,6 +1,9 @@
 ﻿using JoyWay.Game;
+using JoyWay.Game.Character;
+using JoyWay.Game.Services;
 using JoyWay.Infrastructure.Factories;
 using JoyWay.Services;
+using JoyWay.Utils;
 using UnityEngine;
 using Zenject;
 
@@ -16,17 +19,30 @@ namespace JoyWay.Infrastructure.Installers
             Container.Bind<LevelSpawnPoints>().FromInstance(_levelSpawnPoints).AsSingle();
             Container.Bind<CharacterFactory>().FromNew().AsSingle();
             Container.Bind<ProjectileFactory>().FromNew().AsSingle();
-            Container.Bind<ServerPlayerSpawnerService>().FromNew().AsSingle().NonLazy();
-            Container.Bind<ClientPlayerSpawnerService>().FromMethod(context =>
-            {
-                var assetContainer = context.Container.Resolve<AssetContainer>();
-                var characterFactory = context.Container.Resolve<CharacterFactory>();
+            Container.Bind<IInitializable, CharacterDeathSystem>()
+                .To<CharacterDeathSystem>().FromNew().AsSingle();
+            Container.Bind<DamageController>().FromNew().AsTransient();
 
-                var characterPrefab = assetContainer.Character.Value.gameObject;
-                return new ClientPlayerSpawnerService(characterPrefab, characterFactory);
-            }).AsSingle().NonLazy();
+            Container.Bind<IInitializable, ServerPlayerSpawnerSystem>()
+                .To<ServerPlayerSpawnerSystem>().FromNew().AsSingle();
 
-            
+            Container.Bind<IInitializable, ServerRespawnPlayerService>()
+                .To<ServerRespawnPlayerService>().FromNew().AsSingle();
+
+            Container.Bind<GameObject>().FromMethod(context => context.Container.Resolve<AssetContainer>().Character.Value.gameObject)
+                .AsTransient().WhenInjectedInto<ClientPlayerSpawnerSystem>();
+            Container.Bind<IInitializable, ClientPlayerSpawnerSystem>().To<ClientPlayerSpawnerSystem>().FromNew().AsSingle();
+
+        }
+
+        private static bool IsServer(InjectContext context)
+        {
+            return context.Container.Resolve<ILaunchContext>().IsServer;
+        }
+
+        private static bool IsClient(InjectContext context)
+        {
+            return context.Container.Resolve<ILaunchContext>().IsClient;
         }
     }
 }

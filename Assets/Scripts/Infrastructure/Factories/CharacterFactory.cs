@@ -9,17 +9,17 @@ namespace JoyWay.Infrastructure.Factories
     public class CharacterFactory
     {
         private readonly AssetContainer _assetContainer;
-        private ILaunchContext _launchContext;
-        private DiContainer _diContainer;
+        private readonly ILaunchContext _launchContext;
+        private readonly DiContainer _diContainer;
 
-        public CharacterFactory(DiContainer diContainer,ILaunchContext launchContext, AssetContainer assetContainer)
+        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, AssetContainer assetContainer)
         {
             _diContainer = diContainer;
             _launchContext = launchContext;
             _assetContainer = assetContainer;
         }
 
-        public CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, bool isOwner)
+        public CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, uint netId, bool isOwner)
         {
             var isHost = _launchContext.IsHost;
             var isClient = _launchContext.IsClient;
@@ -34,6 +34,7 @@ namespace JoyWay.Infrastructure.Factories
             var healthComponent = container.NetworkHealth;
             var damageView = container.DamageView;
             var healthBar = container.HealthBarUI;
+            var damageController = _diContainer.Resolve<DamageController>();
 
             if (isHost)
             {
@@ -52,13 +53,7 @@ namespace JoyWay.Infrastructure.Factories
             lookComponent.Setup(characterConfig.InterpolationTimeInterval);
             damageView.Setup(characterConfig.DisplayDamageTakenDelay);
             healthBar.SetHealth(healthComponent.Health, healthComponent.MaxHealth);
-            healthComponent.HealthChanged += OnHealthChanged;
-
-            void OnHealthChanged(int currentHp, int maxHp)
-            {
-                damageView.DisplayDamageTaken();
-                healthBar.SetHealth(currentHp, maxHp);
-            }
+            damageController.Construct(netId, healthBar, damageView);
 
             return container;
         }

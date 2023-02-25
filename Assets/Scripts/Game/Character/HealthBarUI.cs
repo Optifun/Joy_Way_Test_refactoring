@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace JoyWay.Game.Character
 {
-    public class CharacterHealthBarUI : MonoBehaviour
+    public class HealthBarUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text _healthLabel;
 

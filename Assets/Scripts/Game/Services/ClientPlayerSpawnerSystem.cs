@@ -2,23 +2,29 @@
 using JoyWay.Infrastructure.Factories;
 using Mirror;
 using UnityEngine;
+using Zenject;
+
 namespace JoyWay.Infrastructure
 {
-    public class ClientPlayerSpawnerService:IDisposable
+    public class ClientPlayerSpawnerSystem : IInitializable, IDisposable
     {
         private readonly CharacterFactory _factory;
         private readonly GameObject _playerPrefab;
 
-        public ClientPlayerSpawnerService(GameObject playerPrefab, CharacterFactory factory)
+        public ClientPlayerSpawnerSystem(GameObject playerPrefab, CharacterFactory factory)
         {
             _playerPrefab = playerPrefab;
             _factory = factory;
-            NetworkClient.RegisterPrefab(playerPrefab, Spawn, Despawn);
+        }
+
+        public void Initialize()
+        {
+            NetworkClient.RegisterPrefab(_playerPrefab, Spawn, Despawn);
         }
 
         private GameObject Spawn(SpawnMessage msg)
         {
-            var characterContainer = _factory.CreateCharacter(msg.position, msg.rotation, msg.isOwner);
+            var characterContainer = _factory.CreateCharacter(msg.position, msg.rotation, msg.netId, msg.isOwner);
             return characterContainer.gameObject;
         }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace JoyWay.Game.Character
 {
-    public class DamageViewComponent : MonoBehaviour
+    public class DamageView : MonoBehaviour
     {
         [SerializeField] private MeshRenderer _meshRenderer;
         private float _displayDamageTakenDelay;

@@ -1,27 +1,29 @@
 ﻿using System;
+using JoyWay.Game.Messages;
 using JoyWay.Infrastructure;
+using MessagePipe;
 using Mirror;
 using UnityEngine;
+using Zenject;
 
 namespace JoyWay.Game.Character
 {
     public class NetworkCharacterHealthComponent : NetworkBehaviour
     {
-        public event Action<int, int> HealthChanged;
-        public event Action<NetworkCharacterHealthComponent> Died;
-
         [SyncVar]
         private int _maxHealth;
-        
+
         [SyncVar(hook = nameof(SetHealth))]
         private int _health;
+        private IPublisher<HealthUpdateMessage> _publisher;
 
         public int MaxHealth => _maxHealth;
         public int Health => _health;
 
-        public override void OnStartServer()
+        [Inject]
+        private void Initialize(IPublisher<HealthUpdateMessage> publisher)
         {
-            HealthChanged += (_, __) => CheckForDeath();
+            _publisher = publisher;
         }
 
         public void Setup(int maxHealth)
@@ -36,18 +38,18 @@ namespace JoyWay.Game.Character
             _health -= damage;
         }
 
-        [Server]
-        public void CheckForDeath()
-        {
-            if (_health < 0)
-            {
-                Died?.Invoke(this);
-            }
-        }
-
         private void SetHealth(int oldHealth, int newHealth)
         {
-            HealthChanged?.Invoke(_health, _maxHealth);
+            int delta = newHealth - oldHealth;
+            if (delta == 0) return;
+
+            _publisher.Publish(new HealthUpdateMessage()
+            {
+                Target = netIdentity,
+                MaxHealth = _maxHealth,
+                UpdatedHealth = newHealth,
+                Delta = delta
+            });
         }
     }
 }
