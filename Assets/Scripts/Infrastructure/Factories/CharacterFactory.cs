@@ -38,6 +38,7 @@ namespace JoyWay.Infrastructure.Factories
 
             if (isHost)
             {
+                interactionComponent.Setup(characterConfig.MaxInteractionDistance);
                 healthComponent.Setup(characterConfig.MaxHealth);
                 movementComponent.Setup(characterConfig.MaxSpeed, characterConfig.MovementForce, characterConfig.JumpForce,
                     characterConfig.GroundDrag, characterConfig.AirDrag);
@@ -45,7 +46,6 @@ namespace JoyWay.Infrastructure.Factories
 
             if (isOwner)
             {
-                interactionComponent.Setup(characterConfig.MaxInteractionDistance);
                 container.NetworkCharacter.SetupLocalPlayer();
                 lookComponent.AttachCamera();
             }
