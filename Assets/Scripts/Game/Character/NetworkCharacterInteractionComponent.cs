@@ -2,19 +2,25 @@
 using JoyWay.Services;
 using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using Zenject;
 
 namespace JoyWay.Game.Character
 {
     public class NetworkCharacterInteractionComponent : NetworkBehaviour
     {
         [SerializeField] private Transform _handEndTransform;
-        [SerializeField] private NetworkCharacterLookComponent _lookComponent;
 
         private InputService _inputService;
         private float _maxInteractionDistance;
 
         private PickableProjectile _objectInHand;
+        private Transform _cameraTransform;
+
+        [Inject]
+        private void Initialize(CameraService cameraService) 
+        {
+            _cameraTransform = cameraService.GetCameraTransform();
+        }
 
         public void Setup(float maxInteractionDistance)
         {
@@ -23,8 +29,7 @@ namespace JoyWay.Game.Character
 
         public void Interact()
         {
-            Transform cameraTransform = _lookComponent.GetCameraTransform();
-            CmdHandleInteraction(cameraTransform.position, cameraTransform.forward);
+            CmdHandleInteraction(_cameraTransform.position, _cameraTransform.forward);
         }
 
         [Command]

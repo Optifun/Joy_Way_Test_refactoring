@@ -10,8 +10,6 @@ namespace JoyWay.Game.Character
     public class NetworkCharacterMovementComponent : NetworkBehaviour
     {
         [SerializeField] private Rigidbody _rigidbody;
-        [SerializeField]
-        private NetworkCharacterLookComponent _lookComponent;
 
         private float _maxSpeed;
         private float _movementForce;
@@ -24,7 +22,6 @@ namespace JoyWay.Game.Character
         private Vector3 _moveDirection;
         private Transform _cameraTransform;
         private bool _isGrounded;
-        private CameraService _cameraService;
 
         public void Setup(float maxSpeed, float movementForce, float jumpForce, float groundDrag, float airDrag)
         {
@@ -38,11 +35,9 @@ namespace JoyWay.Game.Character
         [Inject]
         private void Initialize(CameraService cameraService)
         {
-            _cameraService = cameraService;
             _cameraTransform = cameraService.GetCameraTransform();
         }
 
-        [Client]
         public void Move(Vector2 moveDirection)
         {
             _moveDirection = InputDirectionToCameraLookDirection(moveDirection);
@@ -66,7 +61,12 @@ namespace JoyWay.Game.Character
         private void CmdPerformJump()
         {
             if (CheckGrounded())
+            {
+                var oldVelocity = _rigidbody.velocity;
+                var horizontalVelocity = new Vector3(oldVelocity.x, 0, oldVelocity.z);
+                _rigidbody.velocity = horizontalVelocity;
                 _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+            }
         }
 
         [Server]
