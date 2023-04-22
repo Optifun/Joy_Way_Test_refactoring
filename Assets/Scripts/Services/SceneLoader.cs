@@ -1,28 +1,24 @@
 ﻿using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace JoyWay.Services
 {
-    public class SceneLoader : MonoBehaviour
+    public class SceneLoader
     {
-        public Coroutine Load(string name, Action onLoaded = null) => StartCoroutine((LoadScene(name, onLoaded)));
-
-        private IEnumerator LoadScene(string nextScene, Action onLoaded = null)
+        public async UniTask LoadAsync(string sceneName, Action onLoaded = null)
         {
-            if (SceneManager.GetActiveScene().name == nextScene)
+            if (SceneManager.GetActiveScene().name == sceneName)
             {
                 onLoaded?.Invoke();
-                yield break;
+                return;
             }
-
-            AsyncOperation waitNextScene = SceneManager.LoadSceneAsync(nextScene);
-
-            while (!waitNextScene.isDone)
-                yield return null;
-
+            await SceneManager.LoadSceneAsync(sceneName).ToUniTask();
             onLoaded?.Invoke();
         }
+
+        public void Load(string sceneName, Action onLoaded = null) => LoadAsync(sceneName, onLoaded).Forget();
     }
 }

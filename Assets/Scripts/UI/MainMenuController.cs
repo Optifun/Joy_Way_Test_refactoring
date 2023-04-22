@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Cysharp.Threading.Tasks;
 using JoyWay.Infrastructure;
 
 namespace JoyWay.UI
@@ -13,8 +14,8 @@ namespace JoyWay.UI
             _gameFlow = gameFlow;
             _mainMenuUI = mainMenu;
 
-            _mainMenuUI.HostButtonClicked.AddListener(() => _gameFlow.StartHost());
-            _mainMenuUI.ConnectButtonClicked.AddListener(() => _gameFlow.StartClient(GetAddress()));
+            _mainMenuUI.HostButtonClicked.AddListener(OnStartHostClicked);
+            _mainMenuUI.ConnectButtonClicked.AddListener(OnConnectClicked);
         }
 
         public void Show()
@@ -25,6 +26,15 @@ namespace JoyWay.UI
         public void Hide()
         {
             _mainMenuUI.Hide();
+        }
+
+        private void OnConnectClicked()
+        {
+            _gameFlow.StartClientAsync(GetAddress()).Forget();
+        }
+        private void OnStartHostClicked()
+        {
+            _gameFlow.StartHostAsync().Forget();
         }
 
         private IPAddress GetAddress()

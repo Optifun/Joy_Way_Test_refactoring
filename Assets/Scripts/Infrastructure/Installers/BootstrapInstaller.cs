@@ -57,11 +57,8 @@ namespace JoyWay.Infrastructure.Installers
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
-            
-            Container.Bind<SceneLoader>()
-                .FromNewComponentOnNewGameObject()
-                .AsSingle()
-                .NonLazy();
+
+            Container.Bind<SceneLoader>().ToSelf().AsSingle();
 
             Container.Bind<CameraService>()
                 .FromComponentInNewPrefab(_cameraService)

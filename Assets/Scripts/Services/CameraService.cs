@@ -16,8 +16,8 @@ namespace JoyWay.Services
         [Inject]
         public void Construct(AdvancedNetworkManager networkManager)
         {
-            networkManager.Connected += EnableFpsCamera;
-            networkManager.Disconnected += DisableFpsCamera;
+            networkManager.ClientConnected += EnableFpsCamera;
+            networkManager.ClientDisconnected += DisableFpsCamera;
             Cursor.lockState = CursorLockMode.Confined;
         }
 

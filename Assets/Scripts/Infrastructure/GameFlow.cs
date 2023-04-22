@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Net;
+﻿using System.Net;
+using Cysharp.Threading.Tasks;
 using JoyWay.Resources;
 using JoyWay.Services;
 using JoyWay.UI;
@@ -35,49 +35,39 @@ namespace JoyWay.Infrastructure
         {
             _mainMenu = _uiFactory.CreateMainMenu(this);
             _crosshairUI = _uiFactory.CreateCrosshairUI();
-            _networkManager.Disconnected += ExitGame;
-            GoToMenu();
+            _networkManager.ClientDisconnected += ExitGame;
+            GoToMenu().Forget();
         }
 
         public void ExitGame()
         {
             IsServer = false;
             IsClient = false;
-            GoToMenu();
+            GoToMenu().Forget();
         }
 
-        public void StartClient(IPAddress address)
+        public async UniTask StartClientAsync(IPAddress address)
         {
             IsClient = true;
-            StartCoroutine(StartClientRoutine(address));
+            await _sceneLoader.LoadAsync(Constants.GameScene);
+            await _networkManager.ConnectAsync(address);
+            GoToGame();
         }
 
-        public void StartHost()
+        public async UniTask StartHostAsync()
         {
             IsServer = true;
             IsClient = true;
-            StartCoroutine(StartHostRoutine());
-        }
-
-
-        private IEnumerator StartClientRoutine(IPAddress ipAddress)
-        {
-            yield return _sceneLoader.Load(Constants.GameScene);
-            _networkManager.Connect(ipAddress);
+            await _sceneLoader.LoadAsync(Constants.GameScene);
+            await _networkManager.StartHostAsync();
             GoToGame();
         }
 
-        private IEnumerator StartHostRoutine()
-        {
-            yield return _sceneLoader.Load(Constants.GameScene);
-            _networkManager.StartHost();
-            GoToGame();
-        }
 
-        private void GoToMenu()
+        private async UniTask GoToMenu()
         {
             _inputService.Disable();
-            _sceneLoader.Load(Constants.MenuScene);
+            await _sceneLoader.LoadAsync(Constants.MenuScene);
             _mainMenu.Show();
             _crosshairUI.Hide();
         }
@@ -91,7 +81,7 @@ namespace JoyWay.Infrastructure
 
         private void OnDestroy()
         {
-            _networkManager.Disconnected -= ExitGame;
+            _networkManager.ClientDisconnected -= ExitGame;
         }
     }
 }
