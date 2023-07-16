@@ -25,7 +25,8 @@ namespace JoyWay.Infrastructure
         public bool IsServer { get; private set; }
 
         private IBufferedPublisher<SpawnCharacterServerMessage> _spawnCharacter;
-        private UniTaskCompletionSource _completionSource;
+        private UniTaskCompletionSource _serverConnectedCompletionSource;
+        private UniTaskCompletionSource _clientConnectedCompletionSource;
 
         [Inject]
         public void Construct(IBufferedPublisher<SpawnCharacterServerMessage> spawnCharacter)
@@ -41,10 +42,9 @@ namespace JoyWay.Infrastructure
 
         public UniTask ConnectAsync(IPAddress ipAddress)
         {
-            Assert.IsNull(_completionSource, "Some operation is in progress, can't Connect");
-            _completionSource = new UniTaskCompletionSource();
+            _clientConnectedCompletionSource = new UniTaskCompletionSource();
             Connect(ipAddress);
-            return _completionSource.Task;
+            return _clientConnectedCompletionSource.Task;
         }
 
         public void Connect(IPAddress ipAddress)
@@ -61,10 +61,10 @@ namespace JoyWay.Infrastructure
         
         public UniTask StartHostAsync()
         {
-            Assert.IsNull(_completionSource, "Some operation is in progress, can't start host");
-            _completionSource = new UniTaskCompletionSource();
+            // Assert.IsNull(_completionSource, "Some operation is in progress, can't start host");
+            _serverConnectedCompletionSource = new UniTaskCompletionSource();
             StartHost();
-            return _completionSource.Task;
+            return _serverConnectedCompletionSource.Task;
         }
 
 
@@ -73,8 +73,7 @@ namespace JoyWay.Infrastructure
             base.OnStartClient();
             IsClient = true;
             ClientConnected?.Invoke();
-            _completionSource?.TrySetResult();
-            _completionSource = null;
+            _clientConnectedCompletionSource?.TrySetResult();
         }
 
         public override void OnStopClient()
@@ -89,8 +88,7 @@ namespace JoyWay.Infrastructure
             base.OnStartHost();
             IsServer = true;
             ServerStarted?.Invoke();
-            _completionSource.TrySetResult();
-            _completionSource = null;
+            _serverConnectedCompletionSource.TrySetResult();
         }
 
         public override void OnStopHost()
