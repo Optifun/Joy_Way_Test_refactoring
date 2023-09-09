@@ -9,13 +9,14 @@ using Zenject;
 
 namespace JoyWay.Infrastructure.Installers
 {
-    public class GameInstaller : MonoInstaller<GameInstaller>
+    public class GameInstaller : MonoInstaller<GameInstaller>, IInitializable
     {
         [SerializeField]
         private LevelSpawnPoints _levelSpawnPoints;
 
         public override void InstallBindings()
         {
+            Container.Bind<IInitializable>().FromInstance(this).AsSingle();
             Container.Bind<LevelSpawnPoints>().FromInstance(_levelSpawnPoints).AsSingle();
             Container.Bind<CharacterFactory>().FromNew().AsSingle();
             Container.Bind<ProjectileFactory>().FromNew().AsSingle();
@@ -43,6 +44,14 @@ namespace JoyWay.Infrastructure.Installers
         private static bool IsClient(InjectContext context)
         {
             return context.Container.Resolve<ILaunchContext>().IsClient;
+        }
+
+        public void Initialize() // TODO: move to fps game installer
+        {
+            var networkManager = Container.Resolve<AdvancedNetworkManager>();
+            var cameraService = Container.Resolve<CameraService>();
+            networkManager.ClientConnected += () => cameraService.SetFpsCamera(true);
+            networkManager.ClientDisconnected += () => cameraService.SetFpsCamera(false);
         }
     }
 }

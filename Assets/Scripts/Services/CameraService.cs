@@ -1,6 +1,4 @@
-﻿using System;
-using Cinemachine;
-using JoyWay.Infrastructure;
+﻿using Cinemachine;
 using UnityEngine;
 using Zenject;
 
@@ -13,14 +11,12 @@ namespace JoyWay.Services
         private bool _fpsCameraEnabled;
 
         [Inject]
-        public void Construct(AdvancedNetworkManager networkManager, PlayerInputs inputs)
+        public void Construct(PlayerInputs inputs)
         {
-            networkManager.ClientConnected += () => SetFpsCamera(true);
-            networkManager.ClientDisconnected += () => SetFpsCamera(false);
             inputs.Character.Escape.performed += _ => SetFpsCamera(!_fpsCameraEnabled);
         }
 
-        private void SetFpsCamera(bool value)
+        public void SetFpsCamera(bool value)
         {
             LockCursor(value && Application.isFocused);
             _fpsCamera.enabled = value;
