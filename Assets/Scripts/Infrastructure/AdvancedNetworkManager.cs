@@ -1,90 +1,50 @@
 using System;
 using System.Net;
-using JoyWay.Game;
-using JoyWay.Game.Character;
-using JoyWay.Infrastructure.Factories;
+using Cysharp.Threading.Tasks;
+using JoyWay.Game.Messages;
+using JoyWay.UI;
 using kcp2k;
+using MessagePipe;
 using Mirror;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.Assertions;
 using Zenject;
 
 namespace JoyWay.Infrastructure
 {
-    public class AdvancedNetworkManager : NetworkManager
+    public class AdvancedNetworkManager : NetworkManager, ICoroutineRunner
     {
         public new static AdvancedNetworkManager singleton { get; private set; }
-        
-        public event Action Connected;
-        public event Action Disconnected;
-        
-        private LevelSpawnPoints _levelSpawnPoints;
-        private CharacterFactory _characterFactory;
+
+        public event Action ServerStarted;
+        public event Action ServerStopped;
+        public event Action ClientConnected;
+        public event Action ClientDisconnected;
+
+        public bool IsClient { get; private set; }
+        public bool IsServer { get; private set; }
+
+        private IBufferedPublisher<SpawnCharacterServerMessage> _spawnCharacter;
+        private UniTaskCompletionSource _serverConnectedCompletionSource;
+        private UniTaskCompletionSource _clientConnectedCompletionSource;
 
         [Inject]
-        public void Construct(CharacterFactory characterFactory)
+        public void Construct(IBufferedPublisher<SpawnCharacterServerMessage> spawnCharacter)
         {
-            _characterFactory = characterFactory;
+            _spawnCharacter = spawnCharacter;
         }
-        
+
         public override void Awake()
         {
             base.Awake();
             singleton = this;
         }
 
-        public override void OnStartClient()
+        public UniTask ConnectAsync(IPAddress ipAddress)
         {
-            base.OnStartClient();
-            Connected?.Invoke();
-        }
-
-        public override void OnStopClient()
-        {
-            base.OnStopClient();
-            Disconnected?.Invoke();
-        }
-
-        public override void OnStartHost()
-        {
-            base.OnStartHost();
-            Connected?.Invoke();
-        }
-
-        public override void OnStopHost()
-        {
-            base.OnStopHost();
-            Disconnected?.Invoke();
-        }
-
-        private void RespawnCharacterOnServer(NetworkCharacterHealthComponent networkCharacterHealthComponent)
-        {
-            networkCharacterHealthComponent.Died -= RespawnCharacterOnServer;
-            var conn = networkCharacterHealthComponent.netIdentity.connectionToClient;
-            NetworkServer.Destroy(networkCharacterHealthComponent.gameObject);
-            SpawnCharacterOnServer(conn);
-        }
-
-        private void SpawnCharacterOnServer(NetworkConnectionToClient conn)
-        {
-            Transform spawnPoint = GetRandomSpawnPoint();
-            var character = _characterFactory.SpawnCharacterOnServer(spawnPoint, conn);
-            var characterHealth = character.HealthComponent;
-            characterHealth.Died += RespawnCharacterOnServer;
-        }
-
-        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-        {
-            base.OnServerAddPlayer(conn);
-            SpawnCharacterOnServer(conn);
-        }
-
-        private Transform GetRandomSpawnPoint()
-        {
-            if (_levelSpawnPoints == null)
-                _levelSpawnPoints = FindObjectOfType<LevelSpawnPoints>();
-
-            return _levelSpawnPoints.GetRandomSpawnPoint();
+            _clientConnectedCompletionSource = new UniTaskCompletionSource();
+            Connect(ipAddress);
+            return _clientConnectedCompletionSource.Task;
         }
 
         public void Connect(IPAddress ipAddress)
@@ -94,12 +54,68 @@ namespace JoyWay.Infrastructure
                 throw new ArgumentException("Not supported transport");
             }
 
-            UriBuilder builder = new UriBuilder();
-            var exampleUri = transport.ServerUri();
-            builder.Scheme = exampleUri.Scheme;
-            builder.Port = exampleUri.Port;
-            builder.Host = ipAddress.ToString();
-            StartClient(builder.Uri);
+            IsClient = true;
+            var address = BuildURL(ipAddress, transport.ServerUri());
+            StartClient(address);
+        }
+        
+        public UniTask StartHostAsync()
+        {
+            // Assert.IsNull(_completionSource, "Some operation is in progress, can't start host");
+            _serverConnectedCompletionSource = new UniTaskCompletionSource();
+            StartHost();
+            return _serverConnectedCompletionSource.Task;
+        }
+
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            IsClient = true;
+            ClientConnected?.Invoke();
+            _clientConnectedCompletionSource?.TrySetResult();
+        }
+
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+            IsClient = false;
+            ClientDisconnected?.Invoke();
+        }
+
+        public override void OnStartHost()
+        {
+            base.OnStartHost();
+            IsServer = true;
+            ServerStarted?.Invoke();
+            _serverConnectedCompletionSource.TrySetResult();
+        }
+
+        public override void OnStopHost()
+        {
+            base.OnStopHost();
+            IsServer = false;
+            ServerStopped?.Invoke();
+        }
+
+        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+        {
+            GameObject player = Instantiate(playerPrefab);
+            player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+            NetworkServer.AddPlayerForConnection(conn, player);
+
+            _spawnCharacter.Publish(new SpawnCharacterServerMessage() { Connection = conn });
+        }
+
+        private static Uri BuildURL(IPAddress ipAddress, Uri exampleUri)
+        {
+            UriBuilder builder = new UriBuilder
+            {
+                Scheme = exampleUri.Scheme,
+                Port = exampleUri.Port,
+                Host = ipAddress.ToString()
+            };
+            return builder.Uri;
         }
     }
 }

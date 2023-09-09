@@ -1,6 +1,4 @@
-﻿using System;
-using Cinemachine;
-using JoyWay.Infrastructure;
+﻿using Cinemachine;
 using UnityEngine;
 using Zenject;
 
@@ -10,25 +8,24 @@ namespace JoyWay.Services
     {
         [SerializeField] private CinemachineVirtualCamera _fpsCamera;
         [SerializeField] private Camera _camera;
-
-        public event Action<Vector3> LookDirectionUpdated;
+        private bool _fpsCameraEnabled;
 
         [Inject]
-        public void Construct(AdvancedNetworkManager networkManager)
+        public void Construct(PlayerInputs inputs)
         {
-            networkManager.Connected += EnableFpsCamera;
-            networkManager.Disconnected += DisableFpsCamera;
-            Cursor.lockState = CursorLockMode.Confined;
+            inputs.Character.Escape.performed += _ => SetFpsCamera(!_fpsCameraEnabled);
         }
 
-        private void EnableFpsCamera()
+        public void SetFpsCamera(bool value)
         {
-            _fpsCamera.enabled = true;
+            LockCursor(value && Application.isFocused);
+            _fpsCamera.enabled = value;
+            _fpsCameraEnabled = value;
         }
 
-        private void DisableFpsCamera()
+        private void LockCursor(bool value)
         {
-            _fpsCamera.enabled = false;
+            Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
         }
 
         public void SetFollowTarget(Transform targetTransform)
@@ -39,11 +36,6 @@ namespace JoyWay.Services
         public Transform GetCameraTransform()
         {
             return _camera.transform;
-        }
-
-        private void LateUpdate()
-        {
-            LookDirectionUpdated?.Invoke(GetLookDirection());
         }
 
         public Vector3 GetLookDirection()

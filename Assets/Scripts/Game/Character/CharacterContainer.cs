@@ -1,22 +1,17 @@
-﻿using System;
-using JoyWay.Infrastructure;
-using JoyWay.Infrastructure.Factories;
-using JoyWay.Services;
-using Mirror;
-using UnityEngine;
-using Zenject;
+﻿using UnityEngine;
 
 namespace JoyWay.Game.Character
 {
     public class CharacterContainer : MonoBehaviour
     {
-        [field: SerializeField] public NetworkCharacter NetworkCharacter { get; private set; }
-        [field: SerializeField] public NetworkCharacterHealthComponent HealthComponent { get; private set; }
-        [field: SerializeField] public NetworkCharacterMovementComponent MovementComponent { get; private set; }
-        [field: SerializeField] public NetworkCharacterShootingComponent ShootingComponent { get; private set; }
-        [field: SerializeField] public NetworkCharacterInteractionComponent InteractionComponent { get; private set; }
-        [field: SerializeField] public NetworkCharacterLookComponent LookComponent { get; private set; }
-        [field: SerializeField] public CharacterViewComponent ViewComponent { get; private set; }
-        [field: SerializeField] public CharacterHealthBarUI HealthBarUI { get; private set; }
+        [field: SerializeField] public NetworkCharacter Character { get; private set; }
+        [field: SerializeField] public HealthNetworkComponent Health { get; private set; }
+        [field: SerializeField] public NetworkCharacterMovementComponent NetworkMovement { get; private set; }
+        [field: SerializeField] public NetworkCharacterShootingComponent NetworkShooting { get; private set; }
+        [field: SerializeField] public NetworkCharacterInteractionComponent NetworkInteraction { get; private set; }
+        [field: SerializeField] public NetworkCharacterLookComponent NetworkLook { get; private set; }
+        [field: SerializeField] public CharacterHeadRotation HeadRotation { get; private set; }
+        [field: SerializeField] public DamageView DamageView { get; private set; }
+        [field: SerializeField] public HealthBarUI HealthBarUI { get; private set; }
     }
 }

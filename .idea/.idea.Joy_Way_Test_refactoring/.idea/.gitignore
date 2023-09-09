@@ -3,11 +3,11 @@
 /workspace.xml
 # Rider ignored files
 /projectSettingsUpdater.xml
-/modules.xml
 /contentModel.xml
-/.idea.JoyWay_Test.iml
+/.idea.Joy_Way_Test_refactoring.iml
+/modules.xml
+# Editor-based HTTP Client requests
+/httpRequests/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-# Editor-based HTTP Client requests
-/httpRequests/

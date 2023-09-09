@@ -1,28 +1,21 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
+using Cysharp.Threading.Tasks;
 using JoyWay.Infrastructure;
-using UnityEngine;
 
 namespace JoyWay.UI
 {
     public class MainMenuController
     {
-        private readonly MainMenuUI _mainMenuUI;
-        private AdvancedNetworkManager _networkManager;
+        private MainMenuUI _mainMenuUI;
+        private GameFlow _gameFlow;
 
-        public MainMenuController(MainMenuUI mainMenuUI, AdvancedNetworkManager networkManager)
+        public void Setup(MainMenuUI mainMenu, GameFlow gameFlow)
         {
-            _networkManager = networkManager;
-            _mainMenuUI = mainMenuUI;
+            _gameFlow = gameFlow;
+            _mainMenuUI = mainMenu;
 
-            _mainMenuUI.HostButtonClicked.AddListener(networkManager.StartHost);
-            _mainMenuUI.ConnectButtonClicked.AddListener(Connect);
-            
-        }
-
-        private void Connect()
-        {
-            _networkManager.Connect(GetAddress());
+            _mainMenuUI.HostButtonClicked.AddListener(OnStartHostClicked);
+            _mainMenuUI.ConnectButtonClicked.AddListener(OnConnectClicked);
         }
 
         public void Show()
@@ -35,18 +28,24 @@ namespace JoyWay.UI
             _mainMenuUI.Hide();
         }
 
-        public IPAddress GetAddress()
+        private void OnConnectClicked()
+        {
+            _gameFlow.StartClientAsync(GetAddress()).Forget();
+        }
+        private void OnStartHostClicked()
+        {
+            _gameFlow.StartHostAsync().Forget();
+        }
+
+        private IPAddress GetAddress()
         {
             var ipString = _mainMenuUI.GetAddress();
-            
+
             if (IPAddress.TryParse(ipString, out var ipAddress))
             {
                 return ipAddress;
             }
-            else
-            {
-                return IPAddress.Loopback;
-            }
+            return IPAddress.Loopback;
         }
     }
 }

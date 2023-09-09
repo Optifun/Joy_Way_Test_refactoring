@@ -1,5 +1,9 @@
-using JoyWay.Infrastructure.Factories;
+using JoyWay.Game.Messages;
+using JoyWay.Game.Services;
 using JoyWay.Services;
+using JoyWay.UI;
+using JoyWay.Utils;
+using MessagePipe;
 using UnityEngine;
 using Zenject;
 
@@ -13,9 +17,8 @@ namespace JoyWay.Infrastructure.Installers
         public override void InstallBindings()
         {
             InstallServices();
-            InstallFactories();
 
-            Container.Bind<AdvancedNetworkManager>()
+            Container.Bind<AdvancedNetworkManager, ICoroutineRunner>()
                 .FromComponentInNewPrefab(_networkManagerPrefab)
                 .AsSingle()
                 .NonLazy();
@@ -25,10 +28,18 @@ namespace JoyWay.Infrastructure.Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<GameFlow>()
+            Container.Bind<ILaunchContext, GameFlow>().To<GameFlow>()
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
+
+            Container.Bind<UIFactory>().FromNew().AsSingle().NonLazy();
+            Container.Bind<MainMenuController>().FromNew().AsSingle();
+
+            var options = Container.BindMessagePipe();
+            Container.BindMessageBroker<SpawnCharacterServerMessage>(options);
+            Container.BindMessageBroker<HealthUpdateMessage>(options);
+            Container.BindMessageBroker<DeathMessage>(options);
         }
 
         private void InstallServices()
@@ -37,37 +48,20 @@ namespace JoyWay.Infrastructure.Installers
                 .FromNew()
                 .AsSingle()
                 .NonLazy();
+
+            Container.Bind<PlayerInputs>()
+                .FromNew()
+                .AsSingle();
             
             Container.Bind<InputService>()
                 .FromNewComponentOnNewGameObject()
                 .AsSingle()
                 .NonLazy();
-            
-            Container.Bind<SceneLoader>()
-                .FromNewComponentOnNewGameObject()
-                .AsSingle()
-                .NonLazy();
+
+            Container.Bind<SceneLoader>().ToSelf().AsSingle();
 
             Container.Bind<CameraService>()
                 .FromComponentInNewPrefab(_cameraService)
-                .AsSingle()
-                .NonLazy();
-        }
-
-        private void InstallFactories()
-        {
-            Container.Bind<UIFactory>()
-                .FromNew()
-                .AsSingle()
-                .NonLazy();
-            
-            Container.Bind<CharacterFactory>()
-                .FromNew()
-                .AsSingle()
-                .NonLazy();
-
-            Container.Bind<ProjectileFactory>()
-                .FromNew()
                 .AsSingle()
                 .NonLazy();
         }

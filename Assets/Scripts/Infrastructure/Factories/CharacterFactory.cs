@@ -1,9 +1,5 @@
-﻿using Cinemachine;
-using Cysharp.Threading.Tasks.Triggers;
-using JoyWay.Game.Character;
-using JoyWay.Resources;
+﻿using JoyWay.Game.Character;
 using JoyWay.Services;
-using MessagePipe;
 using Mirror;
 using UnityEngine;
 using Zenject;
@@ -12,65 +8,55 @@ namespace JoyWay.Infrastructure.Factories
 {
     public class CharacterFactory
     {
-        private AssetContainer _assetContainer;
-        private InputService _inputSrevice;
-        private CameraService _cameraService;
-        private ProjectileFactory _projectileFactory;
+        private readonly AssetContainer _assetContainer;
+        private readonly ILaunchContext _launchContext;
+        private readonly DiContainer _diContainer;
 
-        public CharacterFactory(
-            AssetContainer assetContainer,
-            InputService inputService,
-            CameraService cameraService,
-            ProjectileFactory projectileFactory)
+        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, AssetContainer assetContainer)
         {
+            _diContainer = diContainer;
+            _launchContext = launchContext;
             _assetContainer = assetContainer;
-            _inputSrevice = inputService;
-            _cameraService = cameraService;
-            _projectileFactory = projectileFactory;
-            NetworkClient.RegisterPrefab(_assetContainer.Character.Value.gameObject, SpawnCharacterOnClient, UnspawnCharacterOnClient);
         }
 
-        public CharacterContainer SpawnCharacterOnServer(Transform at, NetworkConnectionToClient conn)
+        public CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, uint netId, bool isOwner)
         {
-            bool isOwner = conn.identity.isOwned;
-            var characterContainer = CreateCharacter(at.position, at.rotation, isOwner, true);
-            NetworkServer.Spawn(characterContainer.gameObject, conn);
-            return characterContainer;
-        }
+            var isHost = _launchContext.IsHost;
+            var isClient = _launchContext.IsClient;
 
-        private GameObject SpawnCharacterOnClient(SpawnMessage msg)
-        {
-            var characterContainer = CreateCharacter(msg.position, msg.rotation, msg.isOwner, false);
-            return characterContainer.gameObject;
-        }
-
-
-        private void UnspawnCharacterOnClient(GameObject spawned)
-        {
-            Object.Destroy(spawned);
-        }
-
-        private CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, bool isOwner, bool isHost)
-        {
-            CharacterContainer characterContainer = 
-                Object.Instantiate(_assetContainer.Character.Value, position, rotation);
+            CharacterContainer container = Object.Instantiate(_assetContainer.Character.Value, position, rotation);
+            _diContainer.InjectGameObject(container.gameObject);
 
             CharacterConfig characterConfig = _assetContainer.CharacterConfig.Value;
-            
-            characterContainer.HealthComponent.Setup(characterConfig.MaxHealth);
-            characterContainer.InteractionComponent.Setup(characterConfig.MaxInteractionDistance);
-            characterContainer.LookComponent.Setup(characterConfig.InterpolationTimeInterval);
-            characterContainer.ViewComponent.Setup(characterConfig.DisplayDamageTakenDelay);
-            characterContainer.NetworkCharacter.Initialize(isOwner, isHost, _inputSrevice, _cameraService, _projectileFactory);
+            var interactionComponent = container.NetworkInteraction;
+            var movementComponent = container.NetworkMovement;
+            var lookComponent = container.NetworkLook;
+            var healthComponent = container.Health;
+            var damageView = container.DamageView;
+            var healthBar = container.HealthBarUI;
+            var damageController = _diContainer.Resolve<DamageController>();
 
-            characterContainer.MovementComponent.Setup(
-                characterConfig.MaxSpeed,
-                characterConfig.MovementForce,
-                characterConfig.JumpForce,
-                characterConfig.GroundDrag,
-                characterConfig.AirDrag);
-            
-            return characterContainer;
+            if (isHost)
+            {
+                interactionComponent.Setup(characterConfig.MaxInteractionDistance);
+                healthComponent.Setup(characterConfig.MaxHealth);
+                movementComponent.Setup(characterConfig.MaxSpeed, characterConfig.MovementForce, characterConfig.JumpForce,
+                    characterConfig.GroundDrag, characterConfig.AirDrag);
+            }
+
+            if (isOwner)
+            {
+                container.Character.SetupLocalPlayer();
+                lookComponent.AttachCamera();
+            }
+
+            lookComponent.Setup(characterConfig.InterpolationTimeInterval);
+            damageView.Setup(characterConfig.DisplayDamageTakenDelay);
+            healthBar.Setup(Camera.main);
+            healthBar.SetHealth(healthComponent.Health, healthComponent.MaxHealth);
+            damageController.Construct(netId, healthBar, damageView);
+
+            return container;
         }
     }
 }

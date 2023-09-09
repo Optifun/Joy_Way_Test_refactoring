@@ -2,34 +2,34 @@
 using JoyWay.Services;
 using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using Zenject;
 
 namespace JoyWay.Game.Character
 {
     public class NetworkCharacterInteractionComponent : NetworkBehaviour
     {
         [SerializeField] private Transform _handEndTransform;
-        
+
         private InputService _inputService;
-        private NetworkCharacterLookComponent _lookComponent;
         private float _maxInteractionDistance;
-        
+
         private PickableProjectile _objectInHand;
+        private Transform _cameraTransform;
+
+        [Inject]
+        private void Initialize(CameraService cameraService) 
+        {
+            _cameraTransform = cameraService.GetCameraTransform();
+        }
 
         public void Setup(float maxInteractionDistance)
         {
             _maxInteractionDistance = maxInteractionDistance;
         }
-        
-        public void Initialize(NetworkCharacterLookComponent lookComponent)
-        {
-            _lookComponent = lookComponent;
-        }
-        
+
         public void Interact()
         {
-            Transform cameraTransform = _lookComponent.GetCameraTransform();
-            CmdHandleInteraction(cameraTransform.position, cameraTransform.forward);
+            CmdHandleInteraction(_cameraTransform.position, _cameraTransform.forward);
         }
 
         [Command]
@@ -46,7 +46,7 @@ namespace JoyWay.Game.Character
 
             if (hitTransform == null)
                 return;
-            
+
             if (TryPickupObject(hitTransform, out var pickableObject))
             {
                 if (pickableObject.CanPick)
@@ -67,7 +67,7 @@ namespace JoyWay.Game.Character
         private bool TryPickupObject(Transform hitTransform, out PickableProjectile pickableProjectile)
         {
             pickableProjectile = null;
-            
+
             if (hitTransform.TryGetComponent<PickableProjectile>(out pickableProjectile))
                 return true;
             else
@@ -84,7 +84,7 @@ namespace JoyWay.Game.Character
             else
                 return false;
         }
-        
+
         [Server]
         private Transform GetRaycastHitTransform(Vector3 position, Vector3 direction)
         {

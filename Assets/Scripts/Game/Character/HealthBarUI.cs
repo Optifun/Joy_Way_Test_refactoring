@@ -3,18 +3,25 @@ using UnityEngine;
 
 namespace JoyWay.Game.Character
 {
-    public class CharacterHealthBarUI : MonoBehaviour
+    public class HealthBarUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text _healthLabel;
+        private Camera _camera;
 
-        public void Initialize(int health, int maxHealth)
+        public void Setup(Camera cam)
         {
-            SetHealth(health, maxHealth);
+            _camera = cam;
+
         }
 
         public void SetHealth(int health, int maxHealth)
         {
             _healthLabel.text = $"{health}/{maxHealth}";
+        }
+
+        private void Update()
+        {
+            transform.rotation = _camera.transform.rotation;
         }
     }
 }

@@ -1,9 +1,7 @@
-using System.Numerics;
 using JoyWay.Services;
 using Mirror;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using Zenject;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -18,21 +16,14 @@ namespace JoyWay.Game.Character
         private float _jumpForce;
         private float _groundDrag;
         private float _airDrag;
-        
-        private float _groundRaycastLength = 0.2f;
-        
-        private NetworkCharacterLookComponent _lookComponent;
+
+        private const float GroundRaycastLength = 0.2f;
 
         private Vector3 _moveDirection;
         private Transform _cameraTransform;
         private bool _isGrounded;
 
-        public void Setup(
-            float maxSpeed,
-            float movementForce,
-            float jumpForce,
-            float groundDrag,
-            float airDrag)
+        public void Setup(float maxSpeed, float movementForce, float jumpForce, float groundDrag, float airDrag)
         {
             _maxSpeed = maxSpeed;
             _movementForce = movementForce;
@@ -41,19 +32,18 @@ namespace JoyWay.Game.Character
             _airDrag = airDrag;
         }
 
-        public void Initialize(NetworkCharacterLookComponent lookComponent)
+        [Inject]
+        private void Initialize(CameraService cameraService)
         {
-            _lookComponent = lookComponent;
-            _cameraTransform = _lookComponent.GetCameraTransform();
+            _cameraTransform = cameraService.GetCameraTransform();
         }
-        
-        [Client]
+
         public void Move(Vector2 moveDirection)
         {
             _moveDirection = InputDirectionToCameraLookDirection(moveDirection);
             CmdPerformMove(_moveDirection);
         }
-        
+
         public void Jump()
         {
             CmdPerformJump();
@@ -71,7 +61,12 @@ namespace JoyWay.Game.Character
         private void CmdPerformJump()
         {
             if (CheckGrounded())
+            {
+                var oldVelocity = _rigidbody.velocity;
+                var horizontalVelocity = new Vector3(oldVelocity.x, 0, oldVelocity.z);
+                _rigidbody.velocity = horizontalVelocity;
                 _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+            }
         }
 
         [Server]
@@ -95,7 +90,7 @@ namespace JoyWay.Game.Character
         private Vector3 InputDirectionToCameraLookDirection(Vector2 inputDirection)
         {
             Vector3 calibrationVector =
-                _cameraTransform.right * inputDirection.x + 
+                _cameraTransform.right * inputDirection.x +
                 _cameraTransform.forward * inputDirection.y;
             calibrationVector.y = 0;
             return calibrationVector.normalized;
@@ -103,8 +98,8 @@ namespace JoyWay.Game.Character
 
         private bool CheckGrounded()
         {
-            Ray rayToGround = new Ray(transform.position + Vector3.up * _groundRaycastLength / 2, -transform.up);
-            bool isGrounded = Physics.Raycast(rayToGround, _groundRaycastLength);
+            Ray rayToGround = new Ray(transform.position + Vector3.up * GroundRaycastLength / 2, -transform.up);
+            bool isGrounded = Physics.Raycast(rayToGround, GroundRaycastLength);
             return isGrounded;
         }
     }
