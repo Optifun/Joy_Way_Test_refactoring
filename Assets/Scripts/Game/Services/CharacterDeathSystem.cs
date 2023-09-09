@@ -22,7 +22,7 @@ namespace JoyWay.Game.Services
 
         private void CheckForDeath(HealthUpdateMessage message)
         {
-            if (message.UpdatedHealth < 0)
+            if (message.UpdatedHealth <= 0)
             {
                 _death.Publish(new DeathMessage()
                 {

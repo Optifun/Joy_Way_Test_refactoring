@@ -1,6 +1,7 @@
 ﻿using System;
 using JoyWay.Game.Messages;
 using MessagePipe;
+using UnityEngine;
 
 namespace JoyWay.Game.Character
 {
@@ -33,6 +34,7 @@ namespace JoyWay.Game.Character
 
         private void HealthUpdated(HealthUpdateMessage message)
         {
+            Debug.Log(message);
             _healthBar.SetHealth(message.UpdatedHealth, message.MaxHealth);
         }
 

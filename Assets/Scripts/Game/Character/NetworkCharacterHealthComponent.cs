@@ -1,4 +1,5 @@
-﻿using JoyWay.Game.Messages;
+﻿using System;
+using JoyWay.Game.Messages;
 using MessagePipe;
 using Mirror;
 using Zenject;
@@ -9,7 +10,7 @@ namespace JoyWay.Game.Character
     {
         [field: SyncVar]
         public int MaxHealth { get; private set; }
-        [field: SyncVar(hook = nameof(SetHealth))]
+        [field: SyncVar(hook = nameof(OnSetHealth))]
         public int Health { get; private set; }
 
         private IPublisher<HealthUpdateMessage> _publisher;
@@ -29,10 +30,15 @@ namespace JoyWay.Game.Character
         [Server]
         public void ApplyDamage(int damage)
         {
-            Health -= damage;
+            SetHealth(Health - damage);
         }
 
-        private void SetHealth(int oldHealth, int newHealth)
+        private void SetHealth(int newHealth)
+        {
+            Health = Math.Clamp(newHealth, 0, MaxHealth);
+        }
+
+        private void OnSetHealth(int oldHealth, int newHealth)
         {
             int delta = newHealth - oldHealth;
 
