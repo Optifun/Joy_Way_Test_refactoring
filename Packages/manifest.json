@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.yasirkula.ingamedebugconsole": "https://github.com/yasirkula/UnityIngameDebugConsole.git",
     "com.unity.cinemachine": "2.8.9",
     "com.unity.collab-proxy": "2.0.7",
     "com.unity.ide.rider": "3.0.24",
