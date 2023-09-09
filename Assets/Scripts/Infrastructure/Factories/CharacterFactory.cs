@@ -52,6 +52,7 @@ namespace JoyWay.Infrastructure.Factories
 
             lookComponent.Setup(characterConfig.InterpolationTimeInterval);
             damageView.Setup(characterConfig.DisplayDamageTakenDelay);
+            healthBar.Setup(Camera.main);
             healthBar.SetHealth(healthComponent.Health, healthComponent.MaxHealth);
             damageController.Construct(netId, healthBar, damageView);
 
