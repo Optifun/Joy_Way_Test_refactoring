@@ -1,17 +1,19 @@
-using JoyWay.Game.Messages;
-using JoyWay.Game.Services;
+using Core.Components;
+using Core.Messages;
+using Core.Services;
+using Core.Utils;
 using JoyWay.Services;
 using JoyWay.UI;
-using JoyWay.Utils;
 using MessagePipe;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace JoyWay.Infrastructure.Installers
 {
     public class BootstrapInstaller : MonoInstaller<BootstrapInstaller>
     {
-        [SerializeField] private CameraService _cameraService;
+        [FormerlySerializedAs("_cameraService")][SerializeField] private FPSCameraService _fpsCameraService;
         [SerializeField] private AdvancedNetworkManager _networkManagerPrefab;
         
         public override void InstallBindings()
@@ -33,7 +35,8 @@ namespace JoyWay.Infrastructure.Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<UIFactory>().FromNew().AsSingle().NonLazy();
+            Container.Bind<UIAssetContainer>().FromNew().AsSingle();
+            Container.Bind<UIFactory>().FromNew().AsSingle();
             Container.Bind<MainMenuController>().FromNew().AsSingle();
 
             var options = Container.BindMessagePipe();
@@ -60,8 +63,8 @@ namespace JoyWay.Infrastructure.Installers
 
             Container.Bind<SceneLoader>().ToSelf().AsSingle();
 
-            Container.Bind<CameraService>()
-                .FromComponentInNewPrefab(_cameraService)
+            Container.Bind<FPSCameraService>()
+                .FromComponentInNewPrefab(_fpsCameraService)
                 .AsSingle()
                 .NonLazy();
         }

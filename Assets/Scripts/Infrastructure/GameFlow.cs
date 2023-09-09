@@ -1,6 +1,8 @@
 ﻿using System.Net;
+using Core.Components;
+using Core.Resources;
+using Core.Services;
 using Cysharp.Threading.Tasks;
-using JoyWay.Resources;
 using JoyWay.Services;
 using JoyWay.UI;
 using UnityEngine;

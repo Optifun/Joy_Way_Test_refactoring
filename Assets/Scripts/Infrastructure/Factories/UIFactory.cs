@@ -1,16 +1,17 @@
-﻿using JoyWay.Infrastructure;
-using JoyWay.Services;
+﻿using Core.Components;
+using Core.Services;
+using JoyWay.Infrastructure;
 using JoyWay.UI;
 using UnityEngine;
 using Zenject;
 
 public class UIFactory
 {
-    private readonly AssetContainer _assetContainer;
+    private readonly UIAssetContainer _assetContainer;
     private readonly AdvancedNetworkManager _networkManager;
-    private DiContainer _diContainer;
+    private readonly DiContainer _diContainer;
 
-    public UIFactory(DiContainer diContainer,AssetContainer assetContainer, AdvancedNetworkManager networkManager)
+    public UIFactory(DiContainer diContainer, UIAssetContainer assetContainer, AdvancedNetworkManager networkManager)
     {
         _diContainer = diContainer;
         _assetContainer = assetContainer;
