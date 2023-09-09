@@ -11,24 +11,27 @@ namespace JoyWay.Services
         [SerializeField] private CinemachineVirtualCamera _fpsCamera;
         [SerializeField] private Camera _camera;
 
-        public event Action<Vector3> LookDirectionUpdated;
-
         [Inject]
         public void Construct(AdvancedNetworkManager networkManager)
         {
-            networkManager.ClientConnected += EnableFpsCamera;
-            networkManager.ClientDisconnected += DisableFpsCamera;
-            Cursor.lockState = CursorLockMode.Confined;
+            networkManager.ClientConnected += () => SetFpsCamera(true);
+            networkManager.ClientDisconnected += () => SetFpsCamera(false);
         }
 
-        private void EnableFpsCamera()
+        private void OnApplicationFocus(bool hasFocus)
         {
-            _fpsCamera.enabled = true;
+            LockCursor(_fpsCamera.enabled && hasFocus);
         }
 
-        private void DisableFpsCamera()
+        private void SetFpsCamera(bool value)
         {
-            _fpsCamera.enabled = false;
+            LockCursor(Application.isFocused);
+            _fpsCamera.enabled = value;
+        }
+
+        private void LockCursor(bool value)
+        {
+            Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
         }
 
         public void SetFollowTarget(Transform targetTransform)
