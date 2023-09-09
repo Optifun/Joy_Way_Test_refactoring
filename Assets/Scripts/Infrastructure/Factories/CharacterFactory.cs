@@ -31,7 +31,7 @@ namespace JoyWay.Infrastructure.Factories
             var interactionComponent = container.NetworkInteraction;
             var movementComponent = container.NetworkMovement;
             var lookComponent = container.NetworkLook;
-            var healthComponent = container.NetworkHealth;
+            var healthComponent = container.Health;
             var damageView = container.DamageView;
             var healthBar = container.HealthBarUI;
             var damageController = _diContainer.Resolve<DamageController>();
@@ -46,7 +46,7 @@ namespace JoyWay.Infrastructure.Factories
 
             if (isOwner)
             {
-                container.NetworkCharacter.SetupLocalPlayer();
+                container.Character.SetupLocalPlayer();
                 lookComponent.AttachCamera();
             }
 

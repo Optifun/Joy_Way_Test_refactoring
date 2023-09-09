@@ -6,7 +6,7 @@ using Zenject;
 
 namespace JoyWay.Game.Character
 {
-    public class NetworkCharacterHealthComponent : NetworkBehaviour
+    public class HealthNetworkComponent : NetworkBehaviour
     {
         [field: SyncVar]
         public int MaxHealth { get; private set; }

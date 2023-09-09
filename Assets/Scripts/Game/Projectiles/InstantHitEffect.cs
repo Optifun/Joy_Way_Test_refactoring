@@ -8,9 +8,9 @@ namespace JoyWay.Game.Projectiles
     {
         [SerializeField] private int _damage;
         
-        public override void ApplyEffect(NetworkCharacterHealthComponent characterHealthComponent)
+        public override void ApplyEffect(HealthNetworkComponent healthComponent)
         {
-            characterHealthComponent.ApplyDamage(_damage);
+            healthComponent.ApplyDamage(_damage);
         }
     }
 }

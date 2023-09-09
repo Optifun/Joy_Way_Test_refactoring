@@ -27,7 +27,7 @@ namespace JoyWay.Game.Projectiles
             if (!isServer)
                 return;
             
-            if (other.gameObject.TryGetComponent<NetworkCharacterHealthComponent>(out var characterHealth))
+            if (other.gameObject.TryGetComponent<HealthNetworkComponent>(out var characterHealth))
             {
                 if (characterHealth.netIdentity.netId == _sender)
                     return;
