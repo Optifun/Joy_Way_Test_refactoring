@@ -1,4 +1,4 @@
-﻿namespace JoyWay.Infrastructure
+﻿namespace JoyWay.Core.Services
 {
     public interface ILaunchContext
     {

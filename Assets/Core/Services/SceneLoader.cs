@@ -1,7 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
-namespace Core.Services
+namespace JoyWay.Core.Services
 {
     public class SceneLoader
     {

@@ -1,5 +1,5 @@
 ﻿using Core.Services;
-using JoyWay.Services;
+using JoyWay.Core.Services;
 using UnityEngine.SceneManagement;
 using Zenject;
 

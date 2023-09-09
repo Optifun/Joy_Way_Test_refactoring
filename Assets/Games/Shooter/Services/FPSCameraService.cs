@@ -1,8 +1,7 @@
 ﻿using Cinemachine;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Services
+namespace JoyWay.Games.Shooter.Services
 {
     public class FPSCameraService : MonoBehaviour
     {

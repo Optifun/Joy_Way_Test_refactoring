@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using Core.Resources;
+﻿using JoyWay.Core.Resources;
 using UnityEngine;
-
-namespace JoyWay.Game
+namespace JoyWay.Games.Shooter
 {
     public class LevelSpawnPoints : MonoBehaviour
     {
@@ -17,7 +15,7 @@ namespace JoyWay.Game
         {
             if (_charactersSpawnPoints == null)
                 _charactersSpawnPoints = GetSpawnPoints();
-            
+
             int index = Random.Range(0, _charactersSpawnPoints.Length);
 
             return _charactersSpawnPoints[index].transform;

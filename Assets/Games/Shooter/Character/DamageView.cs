@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class DamageView : MonoBehaviour
     {

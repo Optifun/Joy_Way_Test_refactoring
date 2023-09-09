@@ -1,17 +1,16 @@
-﻿using JoyWay.Infrastructure.Factories;
+﻿using JoyWay.Games.Shooter.Projectiles;
 using Mirror;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class NetworkCharacterShootingComponent : NetworkBehaviour
     {
         [SerializeField] private Transform _handEndTransform;
         [SerializeField] private NetworkCharacterLookComponent _lookComponent;
-        private ProjectileFactory _projectileFactory;
 
         private Vector3 _lookDirection;
+        private ProjectileFactory _projectileFactory;
 
         [Inject]
         public void Initialize(ProjectileFactory projectileFactory)

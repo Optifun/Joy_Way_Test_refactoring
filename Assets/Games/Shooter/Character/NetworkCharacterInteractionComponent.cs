@@ -1,25 +1,24 @@
-﻿using Core.Components;
-using Core.Services;
-using JoyWay.Game.Projectiles;
-using JoyWay.Services;
+﻿using JoyWay.Core.Components;
+using JoyWay.Core.Services;
+using JoyWay.Games.Shooter.Projectiles;
+using JoyWay.Games.Shooter.Services;
 using Mirror;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class NetworkCharacterInteractionComponent : NetworkBehaviour
     {
         [SerializeField] private Transform _handEndTransform;
+        private Transform _cameraTransform;
 
         private InputService _inputService;
         private float _maxInteractionDistance;
 
         private PickableProjectile _objectInHand;
-        private Transform _cameraTransform;
 
         [Inject]
-        private void Initialize(FPSCameraService fpsCameraService) 
+        private void Initialize(FPSCameraService fpsCameraService)
         {
             _cameraTransform = fpsCameraService.GetCameraTransform();
         }
@@ -44,7 +43,7 @@ namespace JoyWay.Game.Character
                 return;
             }
 
-            Transform hitTransform = GetRaycastHitTransform(position, direction);
+            var hitTransform = GetRaycastHitTransform(position, direction);
 
             if (hitTransform == null)
                 return;
@@ -70,10 +69,9 @@ namespace JoyWay.Game.Character
         {
             pickableProjectile = null;
 
-            if (hitTransform.TryGetComponent<PickableProjectile>(out pickableProjectile))
+            if (hitTransform.TryGetComponent(out pickableProjectile))
                 return true;
-            else
-                return false;
+            return false;
         }
 
         [Server]
@@ -81,19 +79,18 @@ namespace JoyWay.Game.Character
         {
             interactableObject = null;
 
-            if (hitTransform.TryGetComponent<IInteractable>(out interactableObject))
+            if (hitTransform.TryGetComponent(out interactableObject))
                 return true;
-            else
-                return false;
+            return false;
         }
 
         [Server]
         private Transform GetRaycastHitTransform(Vector3 position, Vector3 direction)
         {
-            Ray ray = new Ray(position, direction);
+            var ray = new Ray(position, direction);
             RaycastHit raycastHit;
             Physics.Raycast(ray, out raycastHit, _maxInteractionDistance);
-            Transform hitTransform = raycastHit.transform;
+            var hitTransform = raycastHit.transform;
             return hitTransform;
         }
     }

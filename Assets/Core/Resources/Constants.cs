@@ -1,4 +1,4 @@
-﻿namespace Core.Resources
+﻿namespace JoyWay.Core.Resources
 {
     public static class Constants
     {

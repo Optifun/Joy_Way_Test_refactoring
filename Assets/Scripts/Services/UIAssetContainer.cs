@@ -1,4 +1,4 @@
-﻿using Core.Resources;
+﻿using JoyWay.Core.Resources;
 using JoyWay.UI;
 namespace Core.Services
 {

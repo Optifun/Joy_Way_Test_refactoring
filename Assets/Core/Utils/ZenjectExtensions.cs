@@ -1,5 +1,5 @@
 ﻿using Zenject;
-namespace Core.Utils
+namespace JoyWay.Core.Utils
 {
     public static class ZenjectExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-namespace Core.Services
+namespace JoyWay.Core.Services
 {
     public interface ICoroutineRunner
     {

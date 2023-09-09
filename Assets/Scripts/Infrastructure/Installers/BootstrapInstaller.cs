@@ -1,8 +1,9 @@
-using Core.Components;
-using Core.Messages;
 using Core.Services;
-using Core.Utils;
-using JoyWay.Services;
+using JoyWay.Core.Components;
+using JoyWay.Core.Messages;
+using JoyWay.Core.Services;
+using JoyWay.Core.Utils;
+using JoyWay.Games.Shooter.Services;
 using JoyWay.UI;
 using MessagePipe;
 using UnityEngine;

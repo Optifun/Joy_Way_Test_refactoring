@@ -1,8 +1,7 @@
-﻿using Core.Components;
-using Core.UI;
+﻿using JoyWay.Core.Components;
+using JoyWay.Core.UI;
 using UnityEngine;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class CharacterContainer : MonoBehaviour
     {

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Core.Resources
+namespace JoyWay.Core.Resources
 {
     public class LazyResource<T> where T : Object
     {

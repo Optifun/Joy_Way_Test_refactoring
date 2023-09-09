@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-using Zenject;
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class CharacterHeadRotation : MonoBehaviour
     {

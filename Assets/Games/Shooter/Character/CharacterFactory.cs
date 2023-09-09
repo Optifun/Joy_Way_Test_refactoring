@@ -1,17 +1,14 @@
-﻿using Core.Services;
-using JoyWay.Game.Character;
-using JoyWay.Services;
-using Mirror;
+﻿using JoyWay.Core.Services;
+using JoyWay.Games.Shooter.Services;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Infrastructure.Factories
+namespace JoyWay.Games.Shooter.Character
 {
     public class CharacterFactory
     {
         private readonly AssetContainer _assetContainer;
-        private readonly ILaunchContext _launchContext;
         private readonly DiContainer _diContainer;
+        private readonly ILaunchContext _launchContext;
 
         public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, AssetContainer assetContainer)
         {
@@ -22,13 +19,13 @@ namespace JoyWay.Infrastructure.Factories
 
         public CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, uint netId, bool isOwner)
         {
-            var isHost = _launchContext.IsHost;
-            var isClient = _launchContext.IsClient;
+            bool isHost = _launchContext.IsHost;
+            bool isClient = _launchContext.IsClient;
 
-            CharacterContainer container = Object.Instantiate(_assetContainer.Character.Value, position, rotation);
+            var container = Object.Instantiate(_assetContainer.Character.Value, position, rotation);
             _diContainer.InjectGameObject(container.gameObject);
 
-            CharacterConfig characterConfig = _assetContainer.CharacterConfig.Value;
+            var characterConfig = _assetContainer.CharacterConfig.Value;
             var interactionComponent = container.NetworkInteraction;
             var movementComponent = container.NetworkMovement;
             var lookComponent = container.NetworkLook;

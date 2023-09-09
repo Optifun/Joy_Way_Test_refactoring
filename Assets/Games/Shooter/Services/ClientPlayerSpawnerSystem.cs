@@ -1,10 +1,10 @@
 ﻿using System;
-using JoyWay.Infrastructure.Factories;
+using JoyWay.Games.Shooter.Character;
 using Mirror;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Infrastructure
+using Object = UnityEngine.Object;
+namespace JoyWay.Games.Shooter.Services
 {
     public class ClientPlayerSpawnerSystem : IInitializable, IDisposable
     {
@@ -15,6 +15,11 @@ namespace JoyWay.Infrastructure
         {
             _playerPrefab = playerPrefab;
             _factory = factory;
+        }
+
+        public void Dispose()
+        {
+            NetworkClient.UnregisterPrefab(_playerPrefab);
         }
 
         public void Initialize()
@@ -30,12 +35,7 @@ namespace JoyWay.Infrastructure
 
         private void Despawn(GameObject player)
         {
-            GameObject.Destroy(player);
-        }
-
-        public void Dispose()
-        {
-            NetworkClient.UnregisterPrefab(_playerPrefab);
+            Object.Destroy(player);
         }
     }
 }

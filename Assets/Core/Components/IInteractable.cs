@@ -1,4 +1,4 @@
-﻿namespace Core.Components
+﻿namespace JoyWay.Core.Components
 {
     public interface IInteractable
     {

@@ -1,9 +1,9 @@
 ﻿using System;
-using Core.Messages;
+using JoyWay.Core.Messages;
 using MessagePipe;
 using Mirror;
 using Zenject;
-namespace Core.Components
+namespace JoyWay.Core.Components
 {
     public class HealthNetworkComponent : NetworkBehaviour
     {

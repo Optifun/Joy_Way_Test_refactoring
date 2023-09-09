@@ -1,5 +1,5 @@
 ﻿using Mirror;
-namespace Core.Messages
+namespace JoyWay.Core.Messages
 {
     public class DeathMessage
     {

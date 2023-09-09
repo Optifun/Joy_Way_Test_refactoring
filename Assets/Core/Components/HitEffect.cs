@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Core.Components
+namespace JoyWay.Core.Components
 {
     [System.Serializable]
     public abstract class HitEffect : ScriptableObject

@@ -1,18 +1,22 @@
-﻿using JoyWay.Game.Character;
-using Mirror;
+﻿using Mirror;
 using UnityEngine;
 using UnityEngine.Animations;
-
-namespace JoyWay.Game.Projectiles
+namespace JoyWay.Games.Shooter.Projectiles
 {
     public class PickableProjectile : Projectile
     {
         [SerializeField] private ParentConstraint _parentConstraint;
 
-        private bool _isInHand = false;
+        private bool _isInHand;
 
-        public bool CanPick => !_isInHand;
-        
+        public bool CanPick
+        {
+            get
+            {
+                return !_isInHand;
+            }
+        }
+
         [Server]
         public void Pickup(Transform hand)
         {
@@ -22,7 +26,7 @@ namespace JoyWay.Game.Projectiles
         [Server]
         public override void Throw(Vector3 direction, uint sender)
         {
-            ReleaseFromHand(); 
+            ReleaseFromHand();
             base.Throw(direction, sender);
         }
 
@@ -31,7 +35,7 @@ namespace JoyWay.Game.Projectiles
             _rigidbody.isKinematic = true;
             _collider.isTrigger = false;
             _isInHand = true;
-            ConstraintSource newConstraintSource = new ConstraintSource();
+            var newConstraintSource = new ConstraintSource();
             newConstraintSource.sourceTransform = hand;
             newConstraintSource.weight = 1;
             _parentConstraint.AddSource(newConstraintSource);

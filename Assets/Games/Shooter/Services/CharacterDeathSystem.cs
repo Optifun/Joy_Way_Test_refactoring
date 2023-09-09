@@ -1,19 +1,24 @@
 ﻿using System;
-using Core.Messages;
+using JoyWay.Core.Messages;
 using MessagePipe;
 using Zenject;
-namespace JoyWay.Game.Services
+namespace JoyWay.Games.Shooter.Services
 {
     public class CharacterDeathSystem : IInitializable, IDisposable
     {
-        private readonly ISubscriber<HealthUpdateMessage> _healthUpdated;
         private readonly IPublisher<DeathMessage> _death;
+        private readonly ISubscriber<HealthUpdateMessage> _healthUpdated;
         private IDisposable _subscription;
 
         public CharacterDeathSystem(ISubscriber<HealthUpdateMessage> healthUpdated, IPublisher<DeathMessage> death)
         {
             _death = death;
             _healthUpdated = healthUpdated;
+        }
+
+        public void Dispose()
+        {
+            _subscription?.Dispose();
         }
         public void Initialize()
         {
@@ -24,16 +29,11 @@ namespace JoyWay.Game.Services
         {
             if (message.UpdatedHealth <= 0)
             {
-                _death.Publish(new DeathMessage()
+                _death.Publish(new DeathMessage
                 {
                     Target = message.Target
                 });
             }
-        }
-
-        public void Dispose()
-        {
-            _subscription?.Dispose();
         }
     }
 }

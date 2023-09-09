@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-namespace Core.Components
+namespace JoyWay.Core.Components
 {
     public class PeriodicalDamageComponent : MonoBehaviour
     {

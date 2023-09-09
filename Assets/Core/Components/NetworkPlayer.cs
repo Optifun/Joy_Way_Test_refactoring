@@ -1,6 +1,5 @@
 ﻿using Mirror;
-
-namespace JoyWay.Game
+namespace JoyWay.Core.Components
 {
     public class NetworkPlayer : NetworkBehaviour
     {

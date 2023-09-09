@@ -1,6 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
-namespace Core.UI
+namespace JoyWay.Core.UI
 {
     public class HealthBarUI : MonoBehaviour
     {

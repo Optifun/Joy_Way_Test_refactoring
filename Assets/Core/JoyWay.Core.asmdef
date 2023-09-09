@@ -1,6 +1,6 @@
 {
     "name": "JoyWay.Core",
-    "rootNamespace": "",
+    "rootNamespace": "JoyWay",
     "references": [
         "GUID:30817c1a0e6d646d99c048fc403f5979",
         "GUID:e720aa64e3f58fb4880566a322584340",

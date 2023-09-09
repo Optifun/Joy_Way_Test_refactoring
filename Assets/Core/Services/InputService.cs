@@ -2,8 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
-
-namespace Core.Services
+namespace JoyWay.Core.Services
 {
     public class InputService : MonoBehaviour, IDisposable
     {

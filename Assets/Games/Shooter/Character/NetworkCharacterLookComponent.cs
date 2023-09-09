@@ -1,26 +1,39 @@
 ﻿using System;
-using JoyWay.Services;
+using JoyWay.Games.Shooter.Services;
 using Mirror;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class NetworkCharacterLookComponent : NetworkBehaviour
     {
-        public event Action<Vector3> LookDirectionChanged;
 
         [SerializeField] private Transform _eyes;
 
+        private FPSCameraService _fpsCameraService;
+        private float _interpolationTimeInterval;
+
         [SyncVar(hook = nameof(SetLookDirection))]
         private Vector3 _lookDirection;
-        
-        private FPSCameraService _fpsCameraService;
+        private Vector3 _newLookDirection; // TODO: replace with _lookDirection?
+        private float _timer;
 
         public Vector3 LookDirection { get; private set; }
-        private Vector3 _newLookDirection; // TODO: replace with _lookDirection?
-        private float _interpolationTimeInterval;
-        private float _timer;
+
+        private void Update()
+        {
+            if (isOwned)
+            {
+                LookDirection = _fpsCameraService.GetLookDirection();
+                UpdateLookDirection(LookDirection);
+                // _lookDirection = LookDirection;
+            }
+            else
+            {
+                UpdateLookDirectionByInterpolation();
+            }
+        }
+        public event Action<Vector3> LookDirectionChanged;
 
         [Inject]
         public void Initialize(FPSCameraService fpsCameraService)
@@ -36,20 +49,6 @@ namespace JoyWay.Game.Character
         public void AttachCamera()
         {
             _fpsCameraService.SetFollowTarget(_eyes);
-        }
-
-        private void Update()
-        {
-            if (isOwned)
-            {
-                LookDirection = _fpsCameraService.GetLookDirection();
-                UpdateLookDirection(LookDirection);
-                // _lookDirection = LookDirection;
-            }
-            else
-            {
-                UpdateLookDirectionByInterpolation();
-            }
         }
 
         private void UpdateLookDirection(Vector3 direction)

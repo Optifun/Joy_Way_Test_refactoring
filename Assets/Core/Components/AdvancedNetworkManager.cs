@@ -1,15 +1,14 @@
 using System;
 using System.Net;
-using Core.Messages;
-using Core.Services;
 using Cysharp.Threading.Tasks;
+using JoyWay.Core.Messages;
+using JoyWay.Core.Services;
 using kcp2k;
 using MessagePipe;
 using Mirror;
 using UnityEngine;
 using Zenject;
-
-namespace Core.Components
+namespace JoyWay.Core.Components
 {
     public class AdvancedNetworkManager : NetworkManager, ICoroutineRunner
     {

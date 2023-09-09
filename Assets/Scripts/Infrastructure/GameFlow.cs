@@ -1,9 +1,9 @@
 ﻿using System.Net;
-using Core.Components;
-using Core.Resources;
 using Core.Services;
 using Cysharp.Threading.Tasks;
-using JoyWay.Services;
+using JoyWay.Core.Components;
+using JoyWay.Core.Resources;
+using JoyWay.Core.Services;
 using JoyWay.UI;
 using UnityEngine;
 using Zenject;

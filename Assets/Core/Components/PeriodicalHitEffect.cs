@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Core.Components
+namespace JoyWay.Core.Components
 {
     [CreateAssetMenu(menuName = "HitEffects/PeriodicalHit", fileName = "PeriodicalHit", order = 0)]
     public class PeriodicalHitEffect : InstantHitEffect

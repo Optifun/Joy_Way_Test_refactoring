@@ -1,16 +1,15 @@
 ﻿using System;
-using Core.Messages;
-using Core.UI;
+using JoyWay.Core.Messages;
+using JoyWay.Core.UI;
 using MessagePipe;
 using UnityEngine;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class DamageController : IDisposable
     {
         private readonly ISubscriber<HealthUpdateMessage> _damageMessage;
-        private HealthBarUI _healthBar;
         private DamageView _damageView;
+        private HealthBarUI _healthBar;
         private uint _selfNetId;
         private IDisposable _subscription;
 
@@ -19,17 +18,22 @@ namespace JoyWay.Game.Character
             _damageMessage = damageMessage;
         }
 
+        public void Dispose()
+        {
+            _subscription?.Dispose();
+        }
+
         public void Construct(uint netId, HealthBarUI healthBar, DamageView damageView)
         {
             _healthBar = healthBar;
             _damageView = damageView;
             _selfNetId = netId;
 
-            var builder =  DisposableBag.CreateBuilder(2);
+            var builder = DisposableBag.CreateBuilder(2);
             _damageMessage.Subscribe(HealthUpdated).AddTo(builder);
             _damageMessage.Subscribe(DamageReceived, message =>
-                message.Target.netId == _selfNetId && message.Delta < 0)
-                .AddTo(builder);
+                               message.Target.netId == _selfNetId && message.Delta < 0)
+                       .AddTo(builder);
             _subscription = builder.Build();
         }
 
@@ -42,11 +46,6 @@ namespace JoyWay.Game.Character
         private void DamageReceived(HealthUpdateMessage message)
         {
             _damageView.DisplayDamageTaken();
-        }
-
-        public void Dispose()
-        {
-            _subscription?.Dispose();
         }
     }
 }

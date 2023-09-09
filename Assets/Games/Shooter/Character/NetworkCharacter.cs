@@ -1,19 +1,26 @@
 ﻿using System;
-using Core.Services;
-using JoyWay.Services;
+using JoyWay.Core.Services;
 using Mirror;
 using UnityEngine;
 using Zenject;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class NetworkCharacter : NetworkBehaviour
     {
-        public event Action<NetworkCharacter> OnDestroyed;
 
         [field: SerializeField]
         public CharacterContainer Container { get; private set; }
         private InputService _inputService;
+
+        private void OnDestroy()
+        {
+            _inputService.Move -= Container.NetworkMovement.Move;
+            _inputService.Jump -= Container.NetworkMovement.Jump;
+            _inputService.Interact -= Container.NetworkInteraction.Interact;
+            _inputService.Fire -= Container.NetworkShooting.Fire;
+            OnDestroyed?.Invoke(this);
+        }
+        public event Action<NetworkCharacter> OnDestroyed;
 
         [Inject]
         private void Initialize(InputService inputService)
@@ -27,15 +34,6 @@ namespace JoyWay.Game.Character
             _inputService.Jump += Container.NetworkMovement.Jump;
             _inputService.Interact += Container.NetworkInteraction.Interact;
             _inputService.Fire += Container.NetworkShooting.Fire;
-        }
-
-        private void OnDestroy()
-        {
-            _inputService.Move -= Container.NetworkMovement.Move;
-            _inputService.Jump -= Container.NetworkMovement.Jump;
-            _inputService.Interact -= Container.NetworkInteraction.Interact;
-            _inputService.Fire -= Container.NetworkShooting.Fire;
-            OnDestroyed?.Invoke(this);
         }
     }
 }

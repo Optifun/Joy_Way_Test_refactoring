@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.StaticData
 {
     [CreateAssetMenu(menuName = "Character/CharacterConfig", fileName = "CharacterConfig", order = 0)]
     public class CharacterConfig : ScriptableObject
@@ -14,13 +13,13 @@ namespace JoyWay.Game.Character
         [field: SerializeField] public int JumpForce { get; private set; }
         [field: SerializeField] public int GroundDrag { get; private set; }
         [field: SerializeField] public int AirDrag { get; private set; }
-        
+
         [field: Header("Interaction Component")]
         [field: SerializeField] public float MaxInteractionDistance { get; private set; }
-        
+
         [field: Header("Look Component")]
         [field: SerializeField] public float InterpolationTimeInterval { get; private set; }
-        
+
         [field: Header("View Component")]
         [field: SerializeField] public float DisplayDamageTakenDelay { get; private set; }
     }

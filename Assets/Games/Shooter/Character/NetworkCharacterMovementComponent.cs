@@ -1,27 +1,24 @@
-using JoyWay.Services;
+using JoyWay.Games.Shooter.Services;
 using Mirror;
 using UnityEngine;
 using Zenject;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
-
-namespace JoyWay.Game.Character
+namespace JoyWay.Games.Shooter.Character
 {
     public class NetworkCharacterMovementComponent : NetworkBehaviour
     {
-        [SerializeField] private Rigidbody _rigidbody;
-
-        private float _maxSpeed;
-        private float _movementForce;
-        private float _jumpForce;
-        private float _groundDrag;
-        private float _airDrag;
 
         private const float GroundRaycastLength = 0.2f;
+        [SerializeField] private Rigidbody _rigidbody;
+        private float _airDrag;
+        private Transform _cameraTransform;
+        private float _groundDrag;
+        private bool _isGrounded;
+        private float _jumpForce;
+
+        private float _maxSpeed;
 
         private Vector3 _moveDirection;
-        private Transform _cameraTransform;
-        private bool _isGrounded;
+        private float _movementForce;
 
         public void Setup(float maxSpeed, float movementForce, float jumpForce, float groundDrag, float airDrag)
         {
@@ -82,14 +79,14 @@ namespace JoyWay.Game.Character
         private void ClampMovement()
         {
             var velocity = _rigidbody.velocity;
-            Vector3 flatMovement = new Vector3(velocity.x, 0, velocity.z);
-            Vector3 clamped = Vector3.ClampMagnitude(flatMovement, _maxSpeed);
+            var flatMovement = new Vector3(velocity.x, 0, velocity.z);
+            var clamped = Vector3.ClampMagnitude(flatMovement, _maxSpeed);
             _rigidbody.velocity = new Vector3(clamped.x, velocity.y, clamped.z);
         }
 
         private Vector3 InputDirectionToCameraLookDirection(Vector2 inputDirection)
         {
-            Vector3 calibrationVector =
+            var calibrationVector =
                 _cameraTransform.right * inputDirection.x +
                 _cameraTransform.forward * inputDirection.y;
             calibrationVector.y = 0;
@@ -98,7 +95,7 @@ namespace JoyWay.Game.Character
 
         private bool CheckGrounded()
         {
-            Ray rayToGround = new Ray(transform.position + Vector3.up * GroundRaycastLength / 2, -transform.up);
+            var rayToGround = new Ray(transform.position + Vector3.up * GroundRaycastLength / 2, -transform.up);
             bool isGrounded = Physics.Raycast(rayToGround, GroundRaycastLength);
             return isGrounded;
         }
