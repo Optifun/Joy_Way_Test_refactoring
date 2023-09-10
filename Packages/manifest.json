@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.yasirkula.ingamedebugconsole": "https://github.com/yasirkula/UnityIngameDebugConsole.git",
+    "com.unity.addressables": "1.19.19",
     "com.unity.cinemachine": "2.8.9",
     "com.unity.collab-proxy": "2.0.7",
     "com.unity.ide.rider": "3.0.24",
@@ -11,6 +11,7 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.6.5",
     "com.unity.ugui": "1.0.0",
+    "com.yasirkula.ingamedebugconsole": "https://github.com/yasirkula/UnityIngameDebugConsole.git",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
