@@ -18,35 +18,40 @@ MonoBehaviour:
   m_GUID: 4720d31cfb179de41aa62ca0bcad6ae6
   m_SerializeEntries:
   - m_GUID: f53ec2d902fa3914a81175717ea0d08a
-    m_Address: Shooter/Character
+    m_Address: Character
     m_ReadOnly: 0
     m_SerializedLabels:
     - networkPrefab
     - shooterGame
   - m_GUID: 6c5bd3d9a79554343bae486eeba4299c
-    m_Address: Shooter/Fireball
+    m_Address: Fireball
     m_ReadOnly: 0
     m_SerializedLabels:
     - networkPrefab
     - shooterGame
     - spawnable
   - m_GUID: 0b41e9f3ca611354b8f0028039df2f38
-    m_Address: Shooter/CharacterConfig
+    m_Address: CharacterConfig
     m_ReadOnly: 0
     m_SerializedLabels:
     - shooterGame
   - m_GUID: 9fc0d4010bbf28b4594072e72b8655ab
-    m_Address: Shooter/Scene
+    m_Address: Scene
     m_ReadOnly: 0
     m_SerializedLabels:
     - shooterGame
   - m_GUID: 7383971074c873049bee43b8e97326dd
-    m_Address: Shooter/Stone
+    m_Address: Stone
     m_ReadOnly: 0
     m_SerializedLabels:
     - shooterGame
     - networkPrefab
     - spawnable
+  - m_GUID: ccfff8e0b07149b29b2c999a5a95b78a
+    m_Address: Shooter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - shooterGame
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 69088126a1052634699274af57f1081a, type: 2}
   m_SchemaSet:
