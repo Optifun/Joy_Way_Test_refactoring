@@ -1,6 +1,6 @@
 ﻿using JoyWay.Core.Resources;
 using UnityEngine;
-namespace JoyWay.Games.Shooter
+namespace JoyWay.Core.Utils
 {
     public class LevelSpawnPoints : MonoBehaviour
     {
@@ -8,7 +8,7 @@ namespace JoyWay.Games.Shooter
 
         public GameObject[] GetSpawnPoints()
         {
-            return GameObject.FindGameObjectsWithTag(Constants.SpawnPointTag);
+            return GameObject.FindGameObjectsWithTag(CoreResources.SpawnPointTag);
         }
 
         public Transform GetRandomSpawnPoint()

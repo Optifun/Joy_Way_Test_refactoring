@@ -1,5 +1,7 @@
 using Core.Services;
 using JoyWay.Core.Components;
+using JoyWay.Core.Infrastructure;
+using JoyWay.Core.Infrastructure.AssetManagement;
 using JoyWay.Core.Messages;
 using JoyWay.Core.Services;
 using JoyWay.Core.Utils;
@@ -48,19 +50,14 @@ namespace JoyWay.Infrastructure.Installers
 
         private void InstallServices()
         {
-            Container.Bind<AssetContainer>()
-                .FromNew()
-                .AsSingle()
-                .NonLazy();
+            Container.BindInterfacesAndSelfTo<PrefabSpawner>().FromNew().AsTransient().CopyIntoAllSubContainers();
+            Container.BindInterfacesTo<AssetProvider>().FromNew().AsCached();
 
-            Container.Bind<PlayerInputs>()
-                .FromNew()
-                .AsSingle();
-            
+            Container.Bind<PlayerInputs>().AsSingle();
+
             Container.Bind<InputService>()
                 .FromNewComponentOnNewGameObject()
-                .AsSingle()
-                .NonLazy();
+                .AsSingle();
 
             Container.Bind<SceneLoader>().ToSelf().AsSingle();
 

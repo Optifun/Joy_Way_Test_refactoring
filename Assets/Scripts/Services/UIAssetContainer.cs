@@ -5,8 +5,8 @@ namespace Core.Services
     public class UIAssetContainer
     {
         public readonly LazyResource<MainMenuUI> MainMenuUI =
-            new LazyResource<MainMenuUI>(Constants.MainMenuUI);
+            new LazyResource<MainMenuUI>(CoreResources.MainMenuUI);
         public readonly LazyResource<HideableUI> CrosshairUI =
-            new LazyResource<HideableUI>(Constants.CrosshairUI);
+            new LazyResource<HideableUI>(CoreResources.CrosshairUI);
     }
 }

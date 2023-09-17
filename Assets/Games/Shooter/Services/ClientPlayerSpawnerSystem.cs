@@ -1,5 +1,7 @@
 ﻿using System;
+using JoyWay.Core.Infrastructure.AssetManagement;
 using JoyWay.Games.Shooter.Character;
+using JoyWay.Games.Shooter.StaticData;
 using Mirror;
 using UnityEngine;
 using Zenject;
@@ -9,27 +11,32 @@ namespace JoyWay.Games.Shooter.Services
     public class ClientPlayerSpawnerSystem : IInitializable, IDisposable
     {
         private readonly CharacterFactory _factory;
-        private readonly GameObject _playerPrefab;
+        private readonly CharacterConfig _playerConfig;
+        private readonly IAssets _assets;
+        private CharacterContainer _characterPrefab;
 
-        public ClientPlayerSpawnerSystem(GameObject playerPrefab, CharacterFactory factory)
+        public ClientPlayerSpawnerSystem(CharacterConfig playerConfig, CharacterFactory factory, IAssets assets)
         {
-            _playerPrefab = playerPrefab;
+            _assets = assets;
+            _playerConfig = playerConfig;
             _factory = factory;
         }
 
+        public async void Initialize()
+        {
+            var loadedPrefab = await _assets.Load<GameObject>(_playerConfig.Prefab);
+            _characterPrefab = loadedPrefab.GetComponent<CharacterContainer>();
+            NetworkClient.UnregisterPrefab(loadedPrefab);
+            NetworkClient.RegisterPrefab(loadedPrefab, Spawn, Despawn);
+        }
         public void Dispose()
         {
-            NetworkClient.UnregisterPrefab(_playerPrefab);
-        }
-
-        public void Initialize()
-        {
-            NetworkClient.RegisterPrefab(_playerPrefab, Spawn, Despawn);
+            NetworkClient.UnregisterPrefab(_characterPrefab.gameObject);
         }
 
         private GameObject Spawn(SpawnMessage msg)
         {
-            var characterContainer = _factory.CreateCharacter(msg.position, msg.rotation, msg.netId, msg.isOwner);
+            var characterContainer = _factory.CreateCharacter(_playerConfig, _characterPrefab, msg.position, msg.rotation, msg.netId, msg.isOwner);
             return characterContainer.gameObject;
         }
 

@@ -4,14 +4,16 @@ using JoyWay.Core.Utils;
 using JoyWay.Games.Shooter.Character;
 using JoyWay.Games.Shooter.Projectiles;
 using JoyWay.Games.Shooter.Services;
+using JoyWay.Games.Shooter.StaticData;
 using UnityEngine;
 using Zenject;
 namespace JoyWay.Games.Shooter.Installers
 {
     public class GameInstaller : MonoInstaller<GameInstaller>, IInitializable
     {
-        [SerializeField]
-        private LevelSpawnPoints _levelSpawnPoints;
+        [SerializeField] private LevelSpawnPoints _levelSpawnPoints;
+        [SerializeField] private CharacterConfig _characterConfig;
+        [Inject] private ILaunchContext _launchContext;
 
         public void Initialize() // TODO: move to fps game installer
         {
@@ -25,32 +27,29 @@ namespace JoyWay.Games.Shooter.Installers
         {
             Container.Bind<IInitializable>().FromInstance(this).AsSingle();
             Container.Bind<LevelSpawnPoints>().FromInstance(_levelSpawnPoints).AsSingle();
-            Container.Bind<CharacterFactory>().FromNew().AsSingle();
-            Container.Bind<ProjectileFactory>().FromNew().AsSingle();
-            Container.Bind<IInitializable, CharacterDeathSystem>()
-                  .To<CharacterDeathSystem>().FromNew().AsSingle();
+            Container.Bind<CharacterConfig>().FromInstance(_characterConfig).AsSingle();
+            Container.BindInterfacesAndSelfTo<RegisterNetworkPrefabs>().AsSingle();
+            Container.Bind<CharacterFactory>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ProjectileFactory>().FromNew().AsSingle();
+            Container.BindInterfacesAndSelfTo<CharacterDeathSystem>().AsSingle();
             Container.Bind<DamageController>().FromNew().AsTransient();
 
-            Container.Bind<IInitializable, ServerPlayerSpawnerSystem>()
-                  .To<ServerPlayerSpawnerSystem>().FromNew().AsSingle().When(IsServer);
+            Container.BindInterfacesAndSelfTo<ServerPlayerSpawnerSystem>().AsSingle().When(IsServer);
+            Container.BindInterfacesAndSelfTo<ServerRespawnPlayerService>().AsSingle().When(IsServer);
 
-            Container.Bind<IInitializable, ServerRespawnPlayerService>()
-                  .To<ServerRespawnPlayerService>().FromNew().AsSingle().When(IsServer);
 
-            Container.Bind<GameObject>().FromMethod(context => context.Container.Resolve<AssetContainer>().Character.Value.gameObject)
-                  .AsTransient().WhenInjectedInto<ClientPlayerSpawnerSystem>();
-            Container.Bind<IInitializable, ClientPlayerSpawnerSystem>().To<ClientPlayerSpawnerSystem>().FromNew().AsSingle().When(IsClient);
+            Container.BindInterfacesAndSelfTo<ClientPlayerSpawnerSystem>().AsSingle().When(IsClient);
 
         }
 
-        private static bool IsServer(InjectContext context)
+        private bool IsServer(InjectContext _)
         {
-            return context.Container.Resolve<ILaunchContext>().IsServer;
+            return _launchContext.IsServer;
         }
 
-        private static bool IsClient(InjectContext context)
+        private bool IsClient(InjectContext _)
         {
-            return context.Container.Resolve<ILaunchContext>().IsClient;
+            return _launchContext.IsClient;
         }
     }
 }

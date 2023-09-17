@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06c5a952cef04f3a9a98a3af5ffe501e, type: 3}
   m_Name: CharacterConfig
   m_EditorClassIdentifier: 
+  <Prefab>k__BackingField:
+    m_AssetGUID: f53ec2d902fa3914a81175717ea0d08a
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   <MaxHealth>k__BackingField: 100
   <MaxSpeed>k__BackingField: 7
   <MovementForce>k__BackingField: 35

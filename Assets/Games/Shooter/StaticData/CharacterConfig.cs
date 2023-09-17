@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.AddressableAssets;
+
 namespace JoyWay.Games.Shooter.StaticData
 {
     [CreateAssetMenu(menuName = "Character/CharacterConfig", fileName = "CharacterConfig", order = 0)]
     public class CharacterConfig : ScriptableObject
     {
+        [field: SerializeField]
+        public AssetReference Prefab { get; private set; }
         [field: Header("Health Component")]
         [field: SerializeField] public int MaxHealth { get; private set; }
 

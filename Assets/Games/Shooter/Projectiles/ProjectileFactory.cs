@@ -1,20 +1,29 @@
-﻿using JoyWay.Games.Shooter.Services;
+﻿using JoyWay.Core.Infrastructure.AssetManagement;
 using Mirror;
 using UnityEngine;
+using Zenject;
+
 namespace JoyWay.Games.Shooter.Projectiles
 {
-    public class ProjectileFactory
+    public class ProjectileFactory : IInitializable
     {
-        private readonly AssetContainer _assetContainer;
+        private readonly IAssets _assets;
+        private Projectile _fireBallPrefab;
 
-        public ProjectileFactory(AssetContainer assetContainer)
+        public ProjectileFactory(IAssets assets)
         {
-            _assetContainer = assetContainer;
+            _assets = assets;
+        }
+
+        public async void Initialize()
+        {
+            var loadedPrefab = await _assets.Load<GameObject>(ShooterResources.Fireball);
+            _fireBallPrefab = loadedPrefab.GetComponent<Projectile>();
         }
 
         public Projectile CreateFireball(Vector3 at, Vector3 direction, uint sender)
         {
-            var fireball = Object.Instantiate(_assetContainer.Fireball.Value, at, Quaternion.identity);
+            var fireball = Object.Instantiate(_fireBallPrefab, at, Quaternion.identity);
             NetworkServer.Spawn(fireball.gameObject);
             fireball.Throw(direction, sender);
             return fireball;

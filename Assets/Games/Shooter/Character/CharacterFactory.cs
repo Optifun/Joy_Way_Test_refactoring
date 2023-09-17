@@ -1,31 +1,31 @@
-﻿using JoyWay.Core.Services;
-using JoyWay.Games.Shooter.Services;
+﻿using JoyWay.Core.Infrastructure;
+using JoyWay.Core.Services;
+using JoyWay.Games.Shooter.StaticData;
 using UnityEngine;
 using Zenject;
+
 namespace JoyWay.Games.Shooter.Character
 {
-    public class CharacterFactory
+    public class CharacterFactory 
     {
-        private readonly AssetContainer _assetContainer;
         private readonly DiContainer _diContainer;
         private readonly ILaunchContext _launchContext;
+        private readonly PrefabSpawner _prefabSpawner;
 
-        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, AssetContainer assetContainer)
+        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, PrefabSpawner prefabSpawner)
         {
+            _prefabSpawner = prefabSpawner;
             _diContainer = diContainer;
             _launchContext = launchContext;
-            _assetContainer = assetContainer;
         }
 
-        public CharacterContainer CreateCharacter(Vector3 position, Quaternion rotation, uint netId, bool isOwner)
+        public CharacterContainer CreateCharacter(CharacterConfig characterConfig, CharacterContainer prefab, Vector3 position, Quaternion rotation, uint netId, bool isOwner)
         {
             bool isHost = _launchContext.IsHost;
             bool isClient = _launchContext.IsClient;
 
-            var container = Object.Instantiate(_assetContainer.Character.Value, position, rotation);
-            _diContainer.InjectGameObject(container.gameObject);
+            var container = _prefabSpawner.Spawn(prefab, position, rotation);
 
-            var characterConfig = _assetContainer.CharacterConfig.Value;
             var interactionComponent = container.NetworkInteraction;
             var movementComponent = container.NetworkMovement;
             var lookComponent = container.NetworkLook;
