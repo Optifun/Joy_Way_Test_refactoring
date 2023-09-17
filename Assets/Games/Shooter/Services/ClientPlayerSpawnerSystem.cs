@@ -36,6 +36,7 @@ namespace JoyWay.Games.Shooter.Services
 
         private GameObject Spawn(SpawnMessage msg)
         {
+            Debug.Log($"Spawn player{msg.netId}");
             var characterContainer = _factory.CreateCharacter(_playerConfig, _characterPrefab, msg.position, msg.rotation, msg.netId, msg.isOwner);
             return characterContainer.gameObject;
         }

@@ -24,9 +24,8 @@ namespace JoyWay.Infrastructure.Installers
             InstallServices();
 
             Container.Bind<AdvancedNetworkManager, ICoroutineRunner>()
-                .FromComponentInNewPrefab(_networkManagerPrefab)
-                .AsSingle()
-                .NonLazy();
+                  .FromComponentInNewPrefab(_networkManagerPrefab)
+                  .AsSingle();
 
             Container.Bind<IInitializable>()
                 .To<GameStartup>()
@@ -43,9 +42,16 @@ namespace JoyWay.Infrastructure.Installers
             Container.Bind<MainMenuController>().FromNew().AsSingle();
 
             var options = Container.BindMessagePipe();
-            Container.BindMessageBroker<SpawnCharacterServerMessage>(options);
+            Container.BindMessageBroker<NetworkPlayerSpawnedMessage>(options);
+            Container.BindMessageBroker<SpawnPlayerServerMessage>(options);
             Container.BindMessageBroker<HealthUpdateMessage>(options);
             Container.BindMessageBroker<DeathMessage>(options);
+            Container.BindMessageBroker<ClientConnected>(options);
+            Container.BindMessageBroker<ClientDisconnected>(options);
+            Container.BindMessageBroker<ClientError>(options);
+            Container.BindMessageBroker<ServerClientConnected>(options);
+            Container.BindMessageBroker<ServerClientDisconnected>(options);
+            Container.BindMessageBroker<ServerError>(options);
         }
 
         private void InstallServices()

@@ -15,14 +15,14 @@ namespace JoyWay.Games.Shooter.Services
     {
         private readonly CharacterFactory _factory;
         private readonly LevelSpawnPoints _levelSpawnPoints;
-        private readonly IBufferedSubscriber<SpawnCharacterServerMessage> _characterSpawned;
+        private readonly IBufferedSubscriber<SpawnPlayerServerMessage> _characterSpawned;
         private readonly CharacterConfig _characterConfig;
         private readonly IAssets _assets;
 
         private IDisposable _subscription;
         private CharacterContainer _characterPrefab;
 
-        public ServerPlayerSpawnerSystem(IBufferedSubscriber<SpawnCharacterServerMessage> characterSpawned,
+        public ServerPlayerSpawnerSystem(IBufferedSubscriber<SpawnPlayerServerMessage> characterSpawned,
             CharacterFactory factory, CharacterConfig characterConfig, IAssets assets, LevelSpawnPoints levelSpawnPoints)
         {
             _assets = assets;
@@ -44,7 +44,7 @@ namespace JoyWay.Games.Shooter.Services
             _subscription = _characterSpawned.Subscribe(SpawnCharacter);
         }
 
-        private void SpawnCharacter(SpawnCharacterServerMessage message)
+        private void SpawnCharacter(SpawnPlayerServerMessage message)
         {
             var spawnPoint = _levelSpawnPoints.GetRandomSpawnPoint();
             var character = CreateCharacterOnServer(spawnPoint.position, spawnPoint.rotation, message.Connection);

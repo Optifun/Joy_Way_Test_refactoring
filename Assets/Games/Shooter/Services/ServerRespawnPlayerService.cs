@@ -9,11 +9,11 @@ namespace JoyWay.Games.Shooter.Services
     public class ServerRespawnPlayerService : IInitializable, IDisposable
     {
         private readonly ISubscriber<DeathMessage> _deathMessage;
-        private readonly IPublisher<SpawnCharacterServerMessage> _spawnCharacter;
+        private readonly IPublisher<SpawnPlayerServerMessage> _spawnCharacter;
         private IDisposable _subscription;
 
         public ServerRespawnPlayerService(ISubscriber<DeathMessage> deathMessage,
-            IPublisher<SpawnCharacterServerMessage> spawnCharacter)
+            IPublisher<SpawnPlayerServerMessage> spawnCharacter)
         {
             _deathMessage = deathMessage;
             _spawnCharacter = spawnCharacter;
@@ -33,10 +33,7 @@ namespace JoyWay.Games.Shooter.Services
         private void RespawnCharacter(DeathMessage message)
         {
             NetworkServer.Destroy(message.Target.gameObject);
-            _spawnCharacter.Publish(new SpawnCharacterServerMessage
-            {
-                Connection = message.Target.connectionToClient
-            });
+            _spawnCharacter.Publish(new SpawnPlayerServerMessage(message.Target.connectionToClient));
         }
     }
 }

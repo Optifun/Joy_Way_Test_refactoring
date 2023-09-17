@@ -29,6 +29,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - networkPrefab
     - shooterGame
+    - spawnable
   - m_GUID: 0b41e9f3ca611354b8f0028039df2f38
     m_Address: Shooter/CharacterConfig
     m_ReadOnly: 0
@@ -45,6 +46,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - shooterGame
     - networkPrefab
+    - spawnable
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 69088126a1052634699274af57f1081a, type: 2}
   m_SchemaSet:

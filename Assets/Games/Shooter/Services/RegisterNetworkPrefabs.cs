@@ -18,7 +18,7 @@ namespace JoyWay.Games.Shooter.Services
 
         public async void Initialize()
         {
-            _networkPrefabs = await _assets.LoadMultiple<GameObject>(new List<string>(){"networkPrefab", "shooterGame"}, false);
+            _networkPrefabs = await _assets.LoadMultiple<GameObject>(new List<string>(){"spawnable", "shooterGame"}, false);
             foreach (var prefab in _networkPrefabs)
             {
                 var networkIdentity = prefab.GetComponent<NetworkIdentity>();

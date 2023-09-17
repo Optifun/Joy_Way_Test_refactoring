@@ -87,6 +87,7 @@ MonoBehaviour:
     - default
     - networkPrefab
     - shooterGame
+    - spawnable
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 66e97847af7ea8c4597394b75fc34410, type: 2}

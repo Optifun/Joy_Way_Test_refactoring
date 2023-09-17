@@ -6,14 +6,16 @@ using Zenject;
 
 namespace JoyWay.Games.Shooter.Character
 {
-    public class CharacterFactory 
+    public class CharacterFactory
     {
         private readonly DiContainer _diContainer;
         private readonly ILaunchContext _launchContext;
         private readonly PrefabSpawner _prefabSpawner;
+        private InputService _inputService;
 
-        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, PrefabSpawner prefabSpawner)
+        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, PrefabSpawner prefabSpawner, InputService inputService)
         {
+            _inputService = inputService;
             _prefabSpawner = prefabSpawner;
             _diContainer = diContainer;
             _launchContext = launchContext;
@@ -44,7 +46,7 @@ namespace JoyWay.Games.Shooter.Character
 
             if (isOwner)
             {
-                container.Character.SetupLocalPlayer();
+                SetupLocalPlayer(container);
                 lookComponent.AttachCamera();
             }
 
@@ -55,6 +57,25 @@ namespace JoyWay.Games.Shooter.Character
             damageController.Construct(netId, healthBar, damageView);
 
             return container;
+        }
+
+        public void SetupLocalPlayer(CharacterContainer container)
+        {
+            container.Character.OnDestroyed += ReleaseLocalPlayer;
+            _inputService.Move += container.NetworkMovement.Move;
+            _inputService.Jump += container.NetworkMovement.Jump;
+            _inputService.Interact += container.NetworkInteraction.Interact;
+            _inputService.Fire += container.NetworkShooting.Fire;
+        }
+
+        private void ReleaseLocalPlayer(NetworkCharacter character)
+        {
+            var container = character.GetComponent<CharacterContainer>();
+            container.Character.OnDestroyed -= ReleaseLocalPlayer;
+            _inputService.Move -= container.NetworkMovement.Move;
+            _inputService.Jump -= container.NetworkMovement.Jump;
+            _inputService.Interact -= container.NetworkInteraction.Interact;
+            _inputService.Fire -= container.NetworkShooting.Fire;
         }
     }
 }
