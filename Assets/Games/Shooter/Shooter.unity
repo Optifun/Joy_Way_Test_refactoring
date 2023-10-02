@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: 101643963}
   - component: {fileID: 101643962}
   - component: {fileID: 101643964}
+  - component: {fileID: 101643965}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -161,6 +162,7 @@ MonoBehaviour:
   _scriptableObjectInstallers: []
   _monoInstallers:
   - {fileID: 101643964}
+  - {fileID: 101643965}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -207,6 +209,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _levelSpawnPoints: {fileID: 1625712242}
   _characterConfig: {fileID: 11400000, guid: 0b41e9f3ca611354b8f0028039df2f38, type: 2}
+--- !u!114 &101643965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101643961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d05372054784fe7bc3ebb762535c4d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fpsCameraService: {fileID: 8469121199906497787, guid: 9893efcf535b386489e581bb4b2cd68e, type: 3}
 --- !u!4 &165585593 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8096798721255561855, guid: 7383971074c873049bee43b8e97326dd, type: 3}

@@ -1,31 +1,31 @@
-using Core.Services;
 using JoyWay.Core.Components;
 using JoyWay.Core.Infrastructure;
 using JoyWay.Core.Infrastructure.AssetManagement;
-using JoyWay.Core.Messages;
 using JoyWay.Core.Services;
 using JoyWay.Core.Utils;
-using JoyWay.Games.Shooter.Services;
-using JoyWay.UI;
-using MessagePipe;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
 
 namespace JoyWay.Infrastructure.Installers
 {
     public class BootstrapInstaller : MonoInstaller<BootstrapInstaller>
     {
-        [FormerlySerializedAs("_cameraService")][SerializeField] private FPSCameraService _fpsCameraService;
         [SerializeField] private AdvancedNetworkManager _networkManagerPrefab;
         
         public override void InstallBindings()
         {
-            InstallServices();
+            Container.Install<InputInstaller>();
+            Container.Install<MessagesInstaller>();
+            Container.Install<LoggingInstaller>();
+
+            Container.Bind<PrefabSpawner>().ToSelf().AsTransient().CopyIntoAllSubContainers();
+            Container.BindInterfacesTo<AssetProvider>().FromNew().AsCached();
+            Container.Bind<SceneLoader>().ToSelf().AsSingle();
 
             Container.Bind<AdvancedNetworkManager, ICoroutineRunner>()
                   .FromComponentInNewPrefab(_networkManagerPrefab)
-                  .AsSingle();
+                  .AsSingle()
+                  .NonLazy();
 
             Container.Bind<IInitializable>()
                 .To<GameStartup>()
@@ -37,40 +37,7 @@ namespace JoyWay.Infrastructure.Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<UIAssetContainer>().FromNew().AsSingle();
-            Container.Bind<UIFactory>().FromNew().AsSingle();
-            Container.Bind<MainMenuController>().FromNew().AsSingle();
-
-            var options = Container.BindMessagePipe();
-            Container.BindMessageBroker<NetworkPlayerSpawnedMessage>(options);
-            Container.BindMessageBroker<SpawnPlayerServerMessage>(options);
-            Container.BindMessageBroker<HealthUpdateMessage>(options);
-            Container.BindMessageBroker<DeathMessage>(options);
-            Container.BindMessageBroker<ClientConnected>(options);
-            Container.BindMessageBroker<ClientDisconnected>(options);
-            Container.BindMessageBroker<ClientError>(options);
-            Container.BindMessageBroker<ServerClientConnected>(options);
-            Container.BindMessageBroker<ServerClientDisconnected>(options);
-            Container.BindMessageBroker<ServerError>(options);
         }
 
-        private void InstallServices()
-        {
-            Container.BindInterfacesAndSelfTo<PrefabSpawner>().FromNew().AsTransient().CopyIntoAllSubContainers();
-            Container.BindInterfacesTo<AssetProvider>().FromNew().AsCached();
-
-            Container.Bind<PlayerInputs>().AsSingle();
-
-            Container.Bind<InputService>()
-                .FromNewComponentOnNewGameObject()
-                .AsSingle();
-
-            Container.Bind<SceneLoader>().ToSelf().AsSingle();
-
-            Container.Bind<FPSCameraService>()
-                .FromComponentInNewPrefab(_fpsCameraService)
-                .AsSingle()
-                .NonLazy();
-        }
     }
 }
