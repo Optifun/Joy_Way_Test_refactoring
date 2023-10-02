@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Text;
 using Cysharp.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -18,16 +19,19 @@ namespace JoyWay.Core.Infrastructure.AssetManagement
         private readonly Dictionary<string, AddressableData> _addressableData = new Dictionary<string, AddressableData>();
         private readonly List<Action> _releaseResourcesActions = new();
         private readonly PrefabSpawner _prefabSpawner;
+        private readonly ILogger<AssetProvider> _logger;
 
-        public AssetProvider(PrefabSpawner prefabSpawner)
+        public AssetProvider(PrefabSpawner prefabSpawner, ILoggerFactory loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger<AssetProvider>();
             _prefabSpawner = prefabSpawner;
         }
 
         public async void Initialize()
         {
             IResourceLocator locator = await Addressables.InitializeAsync();
-            Debug.Log(locator.Keys);
+            _logger.LogTrace("Loaded addressable paths");
+            _logger.LogTrace("{Keys}", ZString.Join("\n\r", locator.Keys));
         }
 
         public void Dispose()
