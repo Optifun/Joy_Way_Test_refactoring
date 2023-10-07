@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>JetBrains.Lifetimes</id>
+    <version>2023.3.1</version>
+    <authors>JetBrains</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>PackageIcon.png</icon>
+    <projectUrl>https://github.com/JetBrains/rd</projectUrl>
+    <description>JetBrains Core library for graceful disposal, concurrency and reactive programming</description>
+    <releaseNotes>Embedding package icon</releaseNotes>
+    <copyright>Copyright © JetBrains 2023</copyright>
+    <tags>rd lifetime reactive viewable</tags>
+    <repository type="git" url="https://github.com/JetBrains/rd" commit="4ce736c4137a2e8ea91ac36f749f4c8f51c75b42" />
+    <dependencies>
+      <group targetFramework=".NETFramework3.5">
+        <dependency id="AsyncBridge.Net35" version="0.2.0" exclude="Build,Analyzers" />
+        <dependency id="TaskParallelLibrary" version="1.0.2856" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.7.2" />
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>
