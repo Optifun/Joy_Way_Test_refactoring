@@ -1,26 +1,22 @@
-﻿using Core.Services;
-using JoyWay.Core.Services;
-using UnityEngine.SceneManagement;
+﻿using JoyWay.Core.Messages;
+using JoyWay.Core.Model;
+using MessagePipe;
 using Zenject;
 
 namespace JoyWay.Infrastructure
 {
     public class GameStartup : IInitializable
     {
-        private readonly SceneLoader _sceneLoader;
-        private readonly GameFlow _gameFlow;
+        private readonly IPublisher<GameEvent> _publisher;
 
-        public GameStartup(
-            SceneLoader sceneLoader,
-            GameFlow gameFlow)
+        public GameStartup(IPublisher<GameEvent> publisher)
         {
-            _sceneLoader = sceneLoader;
-            _gameFlow = gameFlow;
+            _publisher = publisher;
         }
 
         public void Initialize()
         {
-            _gameFlow.StartGame();
+            _publisher.Publish(new GameEvent(this, GameEventType.ServicesInitialized));
         }
     }
 }

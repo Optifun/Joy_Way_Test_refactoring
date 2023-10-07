@@ -1,6 +1,6 @@
 ﻿using JoyWay.Core.Resources;
 using JoyWay.UI;
-namespace Core.Services
+namespace JoyWay.Services
 {
     public class UIAssetContainer
     {

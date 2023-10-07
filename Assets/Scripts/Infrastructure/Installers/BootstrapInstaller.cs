@@ -1,4 +1,5 @@
 using JoyWay.Core.Components;
+using JoyWay.Core.Handlers;
 using JoyWay.Core.Infrastructure;
 using JoyWay.Core.Infrastructure.AssetManagement;
 using JoyWay.Core.Services;
@@ -27,17 +28,21 @@ namespace JoyWay.Infrastructure.Installers
                   .AsSingle()
                   .NonLazy();
 
+            Container.BindInterfacesAndSelfTo<NetworkManagerHandler>().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<GameState>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameStateMachine>().AsSingle();
+
             Container.Bind<IInitializable>()
                 .To<GameStartup>()
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<ILaunchContext, GameFlow>().To<GameFlow>()
-                .FromNewComponentOnNewGameObject()
-                .AsSingle()
-                .NonLazy();
+            // Container.Bind<GameFlow>().ToSelf()
+            //     .FromNewComponentOnNewGameObject()
+            //     .AsSingle()
+            //     .NonLazy();
 
         }
-
     }
 }

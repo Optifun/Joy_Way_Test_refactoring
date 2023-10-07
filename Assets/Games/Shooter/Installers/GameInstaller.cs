@@ -1,5 +1,6 @@
 ﻿using System;
 using JoyWay.Core.Components;
+using JoyWay.Core.Infrastructure;
 using JoyWay.Core.Messages;
 using JoyWay.Core.Services;
 using JoyWay.Core.Utils;
@@ -17,7 +18,7 @@ namespace JoyWay.Games.Shooter.Installers
     {
         [SerializeField] private LevelSpawnPoints _levelSpawnPoints;
         [SerializeField] private CharacterConfig _characterConfig;
-        [Inject] private ILaunchContext _launchContext;
+        [Inject] private IGameState _gameState;
         [Inject] private IBufferedSubscriber<NetworkPlayerSpawnedMessage> _serverClientConnected;
         [Inject] private IBufferedSubscriber<ServerClientDisconnected> _serverClientDisconnected;
         [Inject] private IBufferedSubscriber<ClientConnected> _clientConnected;
@@ -70,12 +71,12 @@ namespace JoyWay.Games.Shooter.Installers
 
         private bool IsServer(InjectContext _)
         {
-            return _launchContext.IsServer;
+            return _gameState.IsServer;
         }
 
         private bool IsClient(InjectContext _)
         {
-            return _launchContext.IsClient;
+            return _gameState.IsClient;
         }
     }
 }

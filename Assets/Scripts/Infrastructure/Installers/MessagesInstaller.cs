@@ -18,6 +18,7 @@ namespace JoyWay.Infrastructure.Installers
             Container.BindMessageBroker<ServerClientConnected>(options);
             Container.BindMessageBroker<ServerClientDisconnected>(options);
             Container.BindMessageBroker<ServerError>(options);
+            Container.BindMessageBroker<GameEvent>(options);
         }
     }
 }

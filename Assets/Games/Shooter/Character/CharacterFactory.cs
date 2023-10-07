@@ -9,22 +9,22 @@ namespace JoyWay.Games.Shooter.Character
     public class CharacterFactory
     {
         private readonly DiContainer _diContainer;
-        private readonly ILaunchContext _launchContext;
+        private readonly IGameState _gameState;
         private readonly PrefabSpawner _prefabSpawner;
         private InputService _inputService;
 
-        public CharacterFactory(DiContainer diContainer, ILaunchContext launchContext, PrefabSpawner prefabSpawner, InputService inputService)
+        public CharacterFactory(DiContainer diContainer, IGameState gameState, PrefabSpawner prefabSpawner, InputService inputService)
         {
             _inputService = inputService;
             _prefabSpawner = prefabSpawner;
             _diContainer = diContainer;
-            _launchContext = launchContext;
+            _gameState = gameState;
         }
 
         public CharacterContainer CreateCharacter(CharacterConfig characterConfig, CharacterContainer prefab, Vector3 position, Quaternion rotation, uint netId, bool isOwner)
         {
-            bool isHost = _launchContext.IsHost;
-            bool isClient = _launchContext.IsClient;
+            bool isHost = _gameState.IsHost;
+            bool isClient = _gameState.IsClient;
 
             var container = _prefabSpawner.Spawn(prefab, position, rotation);
 

@@ -1,17 +1,27 @@
 ﻿using System.Net;
 using Cysharp.Threading.Tasks;
-using JoyWay.Infrastructure;
+using JetBrains.Lifetimes;
+using JoyWay.Core.Handlers;
+using JoyWay.Core.Requests;
 
 namespace JoyWay.UI
 {
     public class MainMenuController
     {
         private MainMenuUI _mainMenuUI;
-        private GameFlow _gameFlow;
+        private readonly IHostGameRequestHandler _hostGameHandler;
+        private readonly IJoinGameRequestHandler _joinGameHandler;
+        private readonly Lifetime _lifetime;
 
-        public void Setup(MainMenuUI mainMenu, GameFlow gameFlow)
+        public MainMenuController(IHostGameRequestHandler hostGameHandler, IJoinGameRequestHandler joinGameHandler, Lifetime lifetime)
         {
-            _gameFlow = gameFlow;
+            _lifetime = lifetime;
+            _hostGameHandler = hostGameHandler;
+            _joinGameHandler = joinGameHandler;
+        }
+
+        public void Setup(MainMenuUI mainMenu)
+        {
             _mainMenuUI = mainMenu;
 
             _mainMenuUI.HostButtonClicked.AddListener(OnStartHostClicked);
@@ -30,11 +40,15 @@ namespace JoyWay.UI
 
         private void OnConnectClicked()
         {
-            _gameFlow.StartClientAsync(GetAddress()).Forget();
+            var ipAddress = GetAddress();
+            // TODO: obtain result & exception
+            _joinGameHandler.InvokeAsync(new JoinGameRequest(ipAddress), _lifetime).Forget();
         }
+
         private void OnStartHostClicked()
         {
-            _gameFlow.StartHostAsync().Forget();
+            // TODO: obtain result & exception
+            _hostGameHandler.InvokeAsync(new HostGameRequest(), _lifetime).Forget();
         }
 
         private IPAddress GetAddress()

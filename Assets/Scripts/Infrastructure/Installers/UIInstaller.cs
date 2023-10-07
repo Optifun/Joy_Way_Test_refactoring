@@ -1,4 +1,5 @@
-﻿using Core.Services;
+﻿using JoyWay.Infrastructure.Factories;
+using JoyWay.Services;
 using JoyWay.UI;
 using Zenject;
 namespace JoyWay.Infrastructure.Installers
